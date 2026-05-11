@@ -120,7 +120,7 @@ export default function MobileMockDrawer() {
                     >
                       <SbiSidebarSymbol boxClassName="h-12 w-12" priority />
                       <div className="flex-1 overflow-hidden">
-                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">SBI Bank</p>
+                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">State Bank of India</p>
                         <p className="text-xs font-extrabold text-slate-800 truncate leading-tight">{notifications[0].body}</p>
                       </div>
                     </motion.div>
@@ -198,21 +198,21 @@ export default function MobileMockDrawer() {
               <div className="p-8 space-y-6">
                 <div className="grid grid-cols-3 gap-3">
                   <button
-                    onClick={() => addNotification("SBI Bank", "SMS: Please complete your SBI salary account journey. Click to resume.")}
+                    onClick={() => addNotification("State Bank of India", "SMS: Please complete your SBI salary account journey. Click to resume.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest">SMS</span>
                   </button>
                   <button
-                    onClick={() => addNotification("SBI Bank", "WhatsApp: Your SBI salary account is waiting. Click to resume.")}
+                    onClick={() => addNotification("State Bank of India", "WhatsApp: Your SBI salary account is waiting. Click to resume.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest">WA</span>
                   </button>
                   <button
-                    onClick={() => addNotification("SBI Bank", "Email: Final reminder to complete your KYC for SBI salary account.")}
+                    onClick={() => addNotification("State Bank of India", "Email: Final reminder to complete your KYC for SBI salary account.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -222,7 +222,7 @@ export default function MobileMockDrawer() {
 
                 <Button
                   onClick={() => {
-                    addNotification("SBI Bank", "Omnichannel Nudge sent successfully.");
+                    addNotification("State Bank of India", "Omnichannel Nudge sent successfully.");
                   }}
                   className="w-full h-16 rounded-[24px] bg-slate-900 hover:bg-black text-white text-sm font-extrabold uppercase tracking-widest gap-3 shadow-xl shadow-slate-900/10 active:scale-95 transition-all"
                 >
@@ -254,7 +254,7 @@ export default function MobileMockDrawer() {
             </div>
 
             <div className="text-center pt-8">
-              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">SBI Bank Secure Node v2.0</p>
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">State Bank of India Secure Node v2.0</p>
             </div>
           </div>
         )}

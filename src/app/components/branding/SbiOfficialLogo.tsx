@@ -32,7 +32,7 @@ export function SbiOfficialLogo({
   return (
     <Image
       src={SBI_OFFICIAL_LOGO_SRC}
-      alt="SBI Bank"
+      alt="State Bank of India"
       width={INTRINSIC_W}
       height={INTRINSIC_H}
       priority={priority}
@@ -56,7 +56,7 @@ export function SbiSidebarSymbol({ className, boxClassName, priority }: SbiSideb
   return (
     <Image
       src={SBI_SYMBOL_SRC}
-      alt="SBI"
+      alt="State Bank of India"
       width={SYMBOL_INTRINSIC}
       height={SYMBOL_INTRINSIC}
       priority={priority}

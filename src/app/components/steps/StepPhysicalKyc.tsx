@@ -34,7 +34,7 @@ export default function StepPhysicalKyc() {
       <div className="page-header text-center">
         <h1 className="page-title">Application Saved</h1>
         <p className="page-subtitle">
-          Visit your nearest SBI Bank branch to complete KYC verification. Your account activation will not be processed right now in this case.
+          Visit your nearest State Bank of India branch to complete KYC verification. Your account activation will not be processed right now in this case.
         </p>
       </div>
 

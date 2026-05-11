@@ -52,7 +52,7 @@ import ProductMarketplaceDashboard from "./shared/ProductMarketplaceDashboard";
 import { usePortal } from "@/app/context/PortalContext";
 import { getSyncTimestamp, getTriggers, getSyncedEmployees, getPendingUpdates, clearPendingUpdates, setEmployeeOfferNotification, getLatestRmNudgeForEmployee, type RmNudgeMode } from "@/lib/hrmsSync";
 import RmEmployeeNudgeMenu from "@/app/components/rm/RmEmployeeNudgeMenu";
-import { SbiOfficialLogo } from "@/app/components/branding/SbiOfficialLogo";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
 
 const ITEMS_PER_PAGE = 10;
 const CONNECTIONS_PER_PAGE = 10;
@@ -1590,9 +1590,9 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                 <>
                     <div className="mb-8 rounded-2xl overflow-hidden shadow-lg" style={{ background: "linear-gradient(135deg, #22509F 0%, #1A3F7A 60%, #122A55 100%)" }}>
                         <div className="px-8 py-8 md:py-10 flex flex-col sm:flex-row sm:items-center gap-5 md:gap-8">
-                            <SbiOfficialLogo heightClass="max-h-12 md:max-h-14" widthClass="max-w-[200px]" className="drop-shadow-md shrink-0" priority />
+                            <SbiSidebarSymbol priority boxClassName="w-14 h-14 md:w-16 md:h-16 shrink-0 drop-shadow-md" />
                             <div className="min-w-0">
-                                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">SBI Bank – Corporate Salary Banking</h1>
+                                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">State Bank of India – Corporate Salary Banking</h1>
                                 <p className="text-sm md:text-base text-white/90 mt-1 max-w-xl">Manage corporates and salary account opening journeys: NTB, ETB with KYC, ETB Auto Conversion.</p>
                             </div>
                         </div>
@@ -1723,9 +1723,9 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
             <>
                 <div className="mb-10 rounded-2xl overflow-hidden shadow-lg" style={{ background: "linear-gradient(135deg, #22509F 0%, #1A3F7A 60%, #122A55 100%)" }}>
                     <div className="px-8 py-8 md:py-10 flex flex-col sm:flex-row sm:items-center gap-5 md:gap-8">
-                        <SbiOfficialLogo heightClass="max-h-12 md:max-h-14" widthClass="max-w-[200px]" className="drop-shadow-md shrink-0" priority />
+                        <SbiSidebarSymbol priority boxClassName="w-14 h-14 md:w-16 md:h-16 shrink-0 drop-shadow-md" />
                         <div className="min-w-0">
-                            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">SBI Bank – Salary Account Portal</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">State Bank of India – Salary Account Portal</h1>
                             <p className="text-sm md:text-base text-white/90 mt-1 max-w-xl">Quick actions, analytics and insights for corporate salary account management.</p>
                         </div>
                     </div>

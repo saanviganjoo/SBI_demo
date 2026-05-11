@@ -513,36 +513,36 @@ function LegalModal({ title, content, onClose }: { title: string; content: strin
 const MFIN_TNC = `Legal Notice
 VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. IF YOU DO NOT AGREE WITH ANY OF THESE TERMS, PLEASE DO NOT USE THIS SITE. IF YOU HAVE ANY QUERIES ABOUT THESE TERMS, PLEASE CONTACT YOUR SBI RELATIONSHIP MANAGER OR VISIT WWW.SBI.CO.IN
 
-Disclaimer of Warranties, Inaccuracies or Errors | SBI Bank Disclaimer | Availability | Third Party Interaction and Links to Third Party Sites | Copyrights | Trademarks | General Terms and Conditions | Applicable Law and Jurisdiction
+Disclaimer of Warranties, Inaccuracies or Errors | State Bank of India Disclaimer | Availability | Third Party Interaction and Links to Third Party Sites | Copyrights | Trademarks | General Terms and Conditions | Applicable Law and Jurisdiction
 
-Although SBI Bank tries to ensure that all information and recommendations, whether in relation to the products, services, offerings or otherwise (hereinafter ‘Information’) provided as part of this website is correct at the time of its inclusion on the web site, SBI Bank does not guarantee the accuracy of the Information. SBI Bank makes no representations or warranties as to the completeness or accuracy of the Information.
+Although State Bank of India tries to ensure that all information and recommendations, whether in relation to the products, services, offerings or otherwise (hereinafter ‘Information’) provided as part of this website is correct at the time of its inclusion on the web site, State Bank of India does not guarantee the accuracy of the Information. State Bank of India makes no representations or warranties as to the completeness or accuracy of the Information.
 
 THIS WEBSITE IS PROVIDED TO YOU ON AN “AS IS” AND “WHERE-IS” BASIS, WITHOUT ANY WARRANTY. SBI BANK MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
 
 Copyrights
-This web site contains material, including text, graphics and sound, which is protected by copyright and/or other intellectual property rights. All copyright and other intellectual property rights in this material are either owned by SBI Bank or have been licensed to SBI Bank by the owner(s) of those rights.
+This web site contains material, including text, graphics and sound, which is protected by copyright and/or other intellectual property rights. All copyright and other intellectual property rights in this material are either owned by State Bank of India or have been licensed to State Bank of India by the owner(s) of those rights.
 
 You may:
 • use and display the materials only on your personal computer only for personal use.
 • print copies of the information on this site for your personal use.
 
 Trademarks
-The State Bank of India and SBI Bank marks and all products and logos denoted with TM are trademarks or registered trademarks of State Bank of India or its affiliates.
+The State Bank of India name, marks, and all products and logos denoted with TM are trademarks or registered trademarks of State Bank of India or its affiliates.
 
 General Terms and Conditions
-SBI Bank does not routinely monitor your postings to the web site but reserves the right to do so. SBI Bank reserves the right to terminate access to this web site at any time and without notice.
+State Bank of India does not routinely monitor your postings to the web site but reserves the right to do so. State Bank of India reserves the right to terminate access to this web site at any time and without notice.
 
 Applicable Law and Jurisdiction
 These terms and conditions are governed by and to be interpreted in accordance with laws of India. Any dispute shall be submitted to the jurisdiction of the courts located at Mumbai, India.`;
 
 const MFIN_PP = `Objective:
-SBI Bank may collect and store information about you when you visit our site, use our services, or view our online advertisements. The information which SBI Bank collects and store during normal use of the site is used to monitor use of the site and to help further development of our products and services.
+State Bank of India may collect and store information about you when you visit our site, use our services, or view our online advertisements. The information which State Bank of India collects and store during normal use of the site is used to monitor use of the site and to help further development of our products and services.
 
 Scope:
-This policy applies to information collected by SBI Bank through its websites.
+This policy applies to information collected by State Bank of India through its websites.
 
 Collected Information:
-SBI Bank may collect personal information that you submit to us through the Services, which include:
+State Bank of India may collect personal information that you submit to us through the Services, which include:
 • Name;
 • Home address;
 • Email address;
@@ -552,13 +552,13 @@ SBI Bank may collect personal information that you submit to us through the Serv
 • Documents that you provide to us to verify your identity.
 
 Use of collected Personal Information:
-SBI Bank may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests, processing transactions, and providing transaction-related services.
+State Bank of India may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests, processing transactions, and providing transaction-related services.
 
 How We Share Personal Information:
 We may share personal information with organizations or individuals that perform functions on our behalf. We may also share personal information in response to a court order or as otherwise required by law.
 
 Personal Information Protection:
-SBI Bank use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.
+State Bank of India use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.
 
 Privacy Policy Changes:
 We reserve the right to change or update this policy at any time by placing a prominent notice on our site.`;

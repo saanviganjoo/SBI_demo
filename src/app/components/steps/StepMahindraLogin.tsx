@@ -36,7 +36,7 @@ export default function StepMahindraLogin() {
              <div className="absolute inset-0 bg-gradient-to-t [.desktop-view_&]:bg-gradient-to-b from-white [.desktop-view_&]:from-black/60 via-white/50 [.desktop-view_&]:via-black/30 to-transparent" />
              <div className="absolute bottom-2 [.desktop-view_&]:bottom-auto [.desktop-view_&]:top-8 left-1/2 -translate-x-1/2 flex min-h-10 items-center justify-center gap-2 [.desktop-view_&]:min-h-16 px-2 [.desktop-view_&]:px-3">
                <SbiSidebarSymbol boxClassName="h-9 w-9 [.desktop-view_&]:h-11 [.desktop-view_&]:w-11" />
-               <span className="whitespace-nowrap pr-1 text-xs font-bold text-slate-900 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)] [.desktop-view_&]:text-sm [.desktop-view_&]:text-white [.desktop-view_&]:drop-shadow-md">SBI Bank</span>
+               <span className="whitespace-nowrap pr-1 text-xs font-bold text-slate-900 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)] [.desktop-view_&]:text-sm [.desktop-view_&]:text-white [.desktop-view_&]:drop-shadow-md">State Bank of India</span>
              </div>
           </div>
           

@@ -953,7 +953,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3 min-w-0">
                         <SbiSidebarSymbol priority />
                         <div className="min-w-0">
-                            <span className="font-semibold text-[#111827]">SBI Bank</span>
+                            <span className="font-semibold text-[#111827]">State Bank of India</span>
                             <p className="text-[10px] text-[#9CA3AF] mt-0.5">{portalMode === "employee" || portalMode === "hr" ? "Employee benefits" : "Corporate banking"}</p>
                         </div>
                     </div>

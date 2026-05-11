@@ -28,7 +28,7 @@ export default function StepPLEnachSetup() {
 
         <div>
           <h1 className="text-xl font-bold text-slate-900">Set up Auto-debit for EMI</h1>
-          <p className="text-sm text-slate-600 mt-1">Authorize SBI Bank to deduct EMI automatically from your account to avoid late fees.</p>
+          <p className="text-sm text-slate-600 mt-1">Authorize State Bank of India to deduct EMI automatically from your account to avoid late fees.</p>
         </div>
 
         {isLinking ? (

@@ -422,7 +422,7 @@ export function setStatus(employeeId: string, status: "in_progress" | "completed
       ...(stepId ? { currentStepId: stepId } : {}),
     };
     if (status === "completed") {
-      updated.bankName = "SBI Bank";
+      updated.bankName = "State Bank of India";
       updated.accountNumber = "1" + employeeId.replace(/\D/g, "").padStart(10, "0") + "82";
       updated.ifscCode = "IDFB0040101";
     }

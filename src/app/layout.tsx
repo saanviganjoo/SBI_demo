@@ -30,7 +30,7 @@ const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-roboto", display: "optional" });
 
 export const metadata: Metadata = {
-  title: "SBI Bank - Salary Account Opening",
+  title: "State Bank of India - Salary Account Opening",
   description: "Streamlined loan journey for salaried employees.",
 };
 

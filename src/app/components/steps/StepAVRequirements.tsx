@@ -53,7 +53,7 @@ export default function StepAVRequirements() {
             Ready to Proceed
           </Button>
           <p className="text-center mt-6 text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-            By continuing, you agree to share data with SBI Bank.
+            By continuing, you agree to share data with State Bank of India.
           </p>
         </div>
       </div>

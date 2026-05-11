@@ -27,7 +27,7 @@ export default function StepMahindraLanding() {
       <header className="w-full bg-white text-slate-900 py-3 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm border-b border-slate-100">
         <div className="flex items-center gap-2">
           <SbiSidebarSymbol boxClassName="h-9 w-9 md:h-10 md:w-10" priority />
-          <span className="font-bold text-slate-900 text-base md:text-lg tracking-tight">SBI Bank</span>
+          <span className="font-bold text-slate-900 text-base md:text-lg tracking-tight">State Bank of India</span>
         </div>
 
         <button 

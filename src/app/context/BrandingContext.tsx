@@ -25,7 +25,7 @@ export interface BankConfig {
 
 const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
 	mahindra: {
-		name: "SBI Bank",
+		name: "State Bank of India",
 		primary: "#22509F",
 		secondary: "#1A3F7A",
 		accent: "#E8F0FB",
@@ -43,7 +43,7 @@ const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
 		preset: "minimal",
 	},
 	idfc: {
-		name: "SBI Bank",
+		name: "State Bank of India",
 		primary: "#004C8F",
 		secondary: "#0066AA",
 		accent: "#f5f5f5",
@@ -61,7 +61,7 @@ const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
 		preset: "minimal"
 	},
 	hdfc: {
-        name: "SBI Bank",
+        name: "State Bank of India",
         primary: "#004C8F",
         secondary: "#0066AA",
         accent: "#f5f5f5",
@@ -151,7 +151,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const root = document.documentElement;
 
-        // Primary (SBI Bank: #22509F)
+        // Primary (State Bank of India: #22509F)
         root.style.setProperty('--primary-bank', config.primary);
 
         // Darker hover state

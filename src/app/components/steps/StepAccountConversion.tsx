@@ -48,7 +48,7 @@ export default function StepAccountConversion() {
         return (
             <div className="space-y-6">
                 <AgentMessage isNew={false}>
-                    Account verified successfully! I've linked your existing SBI Bank portfolio to your new Priority benefits.
+                    Account verified successfully! I've linked your existing State Bank of India portfolio to your new Priority benefits.
                 </AgentMessage>
                 <UserResponse isNew={false}>
                     <div className="flex flex-col gap-1">
@@ -71,16 +71,16 @@ export default function StepAccountConversion() {
     return (
         <div className="space-y-6 w-full animate-in slide-in-from-bottom-8 duration-700">
             <AgentMessage>
-                Let's secure your connection! 🛡️ Please verify your existing SBI Bank account to unlock direct conversion benefits and skip redundant documentation.
+                Let's secure your connection! 🛡️ Please verify your existing State Bank of India account to unlock direct conversion benefits and skip redundant documentation.
             </AgentMessage>
 
             <div className="pl-14 space-y-10">
                 <div className="bg-white rounded-[40px] shadow-premium-lg border border-slate-50 overflow-hidden">
-                    {/* SBI Bank Verification Header */}
+                    {/* State Bank of India Verification Header */}
                     <div className="bg-slate-900 px-10 py-6 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <ShieldCheck className="w-6 h-6 text-blue-400" />
-                            <h2 className="text-lg font-black text-white uppercase tracking-tight">SBI Bank Secure Login</h2>
+                            <h2 className="text-lg font-black text-white uppercase tracking-tight">State Bank of India Secure Login</h2>
                         </div>
                         <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10">
                             <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Expires in <span className="text-blue-400">04:59</span></p>

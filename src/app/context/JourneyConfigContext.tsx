@@ -407,7 +407,7 @@ const DEFAULT_LEGAL_TEXTS: LegalTexts = {
   privacyTitle: "Privacy Policy",
   vkycConsent: [
     "I consent to complete KYC through VCIP (Video Customer Identification Process) as prescribed by RBI.",
-    "I authorize SBI Bank to open my salary account using Aadhaar OTP-based e-KYC if Video KYC is unsuccessful.",
+    "I authorize State Bank of India to open my salary account using Aadhaar OTP-based e-KYC if Video KYC is unsuccessful.",
     "I declare that I have completed the application myself and on my device.",
   ],
   vkycPresentInIndia: "I confirm that I am present in India.",
@@ -453,9 +453,9 @@ const DEFAULT_SUPPORT: SupportConfig = {
   faqUrl: "",
 };
 
-/* SBI Bank preset - optimised for all 3 journeys (NTB, ETB, ETB-NK) */
+/* State Bank of India preset - optimised for all 3 journeys (NTB, ETB, ETB-NK) */
 export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
-  bankName: "SBI Bank",
+  bankName: "State Bank of India",
   journeyName: "SBI Salary Account Opening",
   ctaLabels: {
     ...DEFAULT_CTA_LABELS,
@@ -488,13 +488,13 @@ export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
   legalTexts: {
     ...DEFAULT_LEGAL_TEXTS,
     aadhaarConsent:
-      "By proceeding I allow SBI Bank to use my Aadhaar to fetch KYC details from UIDAI, fetch CIBIL report from TransUnion CIBIL and give consent to the bank to contact me via Call, SMS, Email and WhatsApp. This consent overrides any registration for DNC/NDNC.",
+      "By proceeding I allow State Bank of India to use my Aadhaar to fetch KYC details from UIDAI, fetch CIBIL report from TransUnion CIBIL and give consent to the bank to contact me via Call, SMS, Email and WhatsApp. This consent overrides any registration for DNC/NDNC.",
     nomineeDisclaimer:
       "In event of account holder's death, the amount of deposit in the account will be returned to the nominee by State Bank of India.",
     kycDisclaimer:
       "I confirm that I will complete full KYC within 30 days. In case of failure in doing so, bank reserves a right to initiate closure of my savings account.",
     taxResidentDisclaimer:
-      "I accept all terms & conditions related to SBI Bank and confirm that I am citizen of only India, born in India and a tax resident of India only. Additionally, I confirm that I am not a politically exposed person nor related to one. For any change, I will visit the nearest branch and update my details.",
+      "I accept all terms & conditions related to State Bank of India and confirm that I am citizen of only India, born in India and a tax resident of India only. Additionally, I confirm that I am not a politically exposed person nor related to one. For any change, I will visit the nearest branch and update my details.",
     companyPortalConsent:
       "I consent to fetch my data from my company portal to prefill this application. If I do not consent, I will enter all details manually.",
   },
@@ -560,7 +560,7 @@ export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
 const DEFAULT_JOURNEY_CONFIG: JourneyConfigState = {
   journeyId: "default",
   journeyName: IDFC_JOURNEY_PRESET.journeyName ?? "SBI Salary Account Opening",
-  bankName: IDFC_JOURNEY_PRESET.bankName ?? "SBI Bank",
+  bankName: IDFC_JOURNEY_PRESET.bankName ?? "State Bank of India",
   journeyMode: "form",
   offerJourneyModeChoice: true,
   steps: [],

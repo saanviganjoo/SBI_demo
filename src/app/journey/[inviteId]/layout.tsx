@@ -7,7 +7,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { inviteId } = await params;
   // Bank name from env or default for title
-  const bankName = process.env.NEXT_PUBLIC_BANK_NAME || "SBI Bank";
+  const bankName = process.env.NEXT_PUBLIC_BANK_NAME || "State Bank of India";
   return {
     title: `Complete your account - ${bankName}`,
     description: "Complete your account opening journey.",

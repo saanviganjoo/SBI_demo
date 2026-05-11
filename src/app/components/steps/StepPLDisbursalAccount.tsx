@@ -110,7 +110,7 @@ export default function StepPLDisbursalAccount() {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-3">
               <Info className="w-4 h-4 text-[#EE1B24] mt-0.5" />
               <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                Note: Verification may take up to 24 hours for non-SBI Bank accounts.
+                Note: Verification may take up to 24 hours for non-State Bank of India accounts.
               </p>
             </div>
           </div>

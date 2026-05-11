@@ -8,14 +8,14 @@ import StepCard from "@/app/components/layout/StepCard";
 import { Button } from "@/app/components/ui/button";
 
 /**
- * SBI Bank step: Account opened confirmation BEFORE Video KYC.
+ * State Bank of India step: Account opened confirmation BEFORE Video KYC.
  * Customer feels account is opened; Video KYC is required to activate and access it.
  * Enables fast account opening that can be completed in one sitting.
  */
 export default function StepAccountOpened() {
     const { nextStep, setBottomBarContent } = useJourney();
     const { config } = useBranding();
-    const bankName = config.name || "SBI Bank";
+    const bankName = config.name || "State Bank of India";
 
     useEffect(() => {
         setBottomBarContent(null);

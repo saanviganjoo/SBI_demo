@@ -111,7 +111,7 @@ export default function SmartDocumentCollectorModal({ isOpen, onClose }: SmartDo
                                     <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                                 </div>
                                 <h4 className="text-2xl font-black text-slate-900 mb-2">Documents Submitted!</h4>
-                                <p className="text-sm text-slate-500 max-w-xs mx-auto">Your documents have been securely encrypted and shared with SBI Bank.</p>
+                                <p className="text-sm text-slate-500 max-w-xs mx-auto">Your documents have been securely encrypted and shared with State Bank of India.</p>
                                 <button 
                                     onClick={onClose}
                                     className="mt-8 h-12 px-8 bg-[#EE1B24] text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-[#EE1B24]/20 hover:bg-[#D61820] transition-all"

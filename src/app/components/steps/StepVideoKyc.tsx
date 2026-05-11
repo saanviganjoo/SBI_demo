@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 export default function StepVideoKyc() {
     const { nextStep, setBottomBarContent, updateFormData, formData } = useJourney();
     const { config } = useJourneyConfig();
-    const bankName = config.bankName || "SBI Bank";
+    const bankName = config.bankName || "State Bank of India";
     const [isConnecting, setIsConnecting] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
@@ -103,7 +103,7 @@ export default function StepVideoKyc() {
                                     processing of personal data (Name, PAN, DoB, Photograph, Lat/Long, Signature, Economic and Financial Profile data) for KYC.
                                 </p>
                                 <p>
-                                    I authorize SBI Bank to open Salary Account using Aadhaar OTP based e-KYC (non face-to-face) if Video KYC is unsuccessful,
+                                    I authorize State Bank of India to open Salary Account using Aadhaar OTP based e-KYC (non face-to-face) if Video KYC is unsuccessful,
                                     subject to RBI guidelines.
                                 </p>
                                 <p>

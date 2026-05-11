@@ -603,7 +603,7 @@ export default function WhitelabelModal({ isOpen, onClose }: WhitelabelModalProp
                     type="text"
                     value={journeyConfig.bankName || ""}
                     onChange={(e) => updateJourneyConfig({ bankName: e.target.value })}
-                    placeholder="e.g. SBI Bank"
+                    placeholder="e.g. State Bank of India"
                     className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium"
                   />
                   <p className="text-xs text-slate-500 mt-2">
@@ -626,10 +626,10 @@ export default function WhitelabelModal({ isOpen, onClose }: WhitelabelModalProp
                     }}
                     className="w-full h-12 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 font-semibold"
                   >
-                    Apply SBI Bank Preset
+                    Apply State Bank of India Preset
                   </Button>
                   <p className="text-xs text-slate-500 mt-2">
-                    One-click optimise all 3 journeys (NTB, ETB, ETB-NK) for SBI Bank—branding, CTAs, legal text, support info.
+                    One-click optimise all 3 journeys (NTB, ETB, ETB-NK) for State Bank of India—branding, CTAs, legal text, support info.
                   </p>
                 </section>
               </>

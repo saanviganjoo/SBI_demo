@@ -122,7 +122,7 @@ export default function StepMahindraTncSelection() {
 
               <div className="grid gap-2 sm:grid-cols-1 [.desktop-view_&]:gap-3">
                 {[
-                  { key: "employerConsent", text: "By entering the OTP I allow my employer to share my salary, salary account as well as my PII (Personal Identifiable Information) details with SBI Bank" },
+                  { key: "employerConsent", text: "By entering the OTP I allow my employer to share my salary, salary account as well as my PII (Personal Identifiable Information) details with State Bank of India" },
                   { key: "languageConsent", text: "I understand English and my preferred language for Personal Loan application is English. I accept and agree to the Privacy Policy consent form and terms of use." },
                   { key: "notPEP", text: "I am not a politically exposed person (i)" },
                   { key: "incomeConsent", text: "My yearly household income is more than Rs. 3 lakhs" }

@@ -36,7 +36,7 @@ const config = {
 				]
 			},
 			colors: {
-				/* SBI Bank: blue #22509F, #1A3F7A */
+				/* State Bank of India: blue #22509F, #1A3F7A */
 				mahindra: {
 					primary: "#22509F",
 					"primary-dark": "#1A3F7A",

@@ -13,7 +13,7 @@ import HelpIcon from "@/app/components/shared/HelpIcon";
 export default function StepJourneySelection() {
   const { nextStep, formData, updateFormData, currentStepIndex, journeySteps } = useJourney();
   const { config } = useJourneyConfig();
-  const bankName = config.bankName || "SBI Bank";
+  const bankName = config.bankName || "State Bank of India";
 
   // Prefilled data from our system
   const prefilledData = {

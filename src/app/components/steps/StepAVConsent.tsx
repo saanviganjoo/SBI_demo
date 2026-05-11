@@ -19,7 +19,7 @@ export default function StepAVConsent() {
         <div className="space-y-3">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Share your data</h1>
           <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed px-4">
-            I consent to sharing my data with <span className="font-bold text-slate-700">SBI Bank</span> for the purpose of verification. I understand that my data will be protected and will be securely shared.
+            I consent to sharing my data with <span className="font-bold text-slate-700">State Bank of India</span> for the purpose of verification. I understand that my data will be protected and will be securely shared.
           </p>
         </div>
 

@@ -38,7 +38,7 @@
     --chart-4: 343 100% 65%;
     --chart-5: 343 100% 75%;
 
-    /* SBI Bank theme - blue (#22509F, #1A3F7A, #E8F0FB) */
+    /* State Bank of India theme - blue (#22509F, #1A3F7A, #E8F0FB) */
     --sbi-blue: #22509F;
     --sbi-blue-dark: #1A3F7A;
     --sbi-blue-light: #E8F0FB;
@@ -53,7 +53,7 @@
     --primary-bank-dark: var(--sbi-blue-dark);
     --secondary-bank: var(--sbi-blue);
 
-    /* Dashboard & portals - SBI Bank (blue) */
+    /* Dashboard & portals - State Bank of India (blue) */
     --dashboard-primary: #22509F;
     --dashboard-primary-dark: #1A3F7A;
     --dashboard-primary-light: #E8F0FB;

@@ -289,7 +289,7 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                     {step === "connecting" && (
                         <div className="absolute inset-0 z-50 bg-black/5 flex items-center justify-center p-6">
                             <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-lg w-full text-center">
-                                <h2 className="text-2xl font-bold text-[#111827] mb-8">Connecting {selectedHrms} With SBI Bank</h2>
+                                <h2 className="text-2xl font-bold text-[#111827] mb-8">Connecting {selectedHrms} With State Bank of India</h2>
                                 <div className="w-full h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden relative">
                                     <div className="absolute inset-0 bg-dashboard-primary animate-progress-loading" />
                                 </div>
