@@ -5,7 +5,9 @@ import { useJourney } from "@/app/context/JourneyContext";
 import { PiggyBank, Car, Bell, FileText, X, GraduationCap } from "lucide-react";
 import ProductMarketplaceDashboard, { openPersonalLoanJourneyInNewTab } from "@/app/components/shared/ProductMarketplaceDashboard";
 import SmartDocumentCollectorModal from "@/app/components/shared/SmartDocumentCollectorModal";
-import { getCurrentEmployeeIdFromJourney, getBreOffersForEmployee, getNudge, clearNudge, getEmployeeOfferNotification, clearEmployeeOfferNotification, type EmployeeOfferProfile, type NudgePayload } from "@/lib/hrmsSync";
+import { cn } from "@/lib/utils";
+import { getCurrentEmployeeIdFromJourney, getBreOffersForEmployee, getNudge, clearNudge, getEmployeeOfferNotification, clearEmployeeOfferNotification, getRmNudgeEventsForEmployee, markRmNudgeEventRead, formatRmNudgeDisplayDate, type EmployeeOfferProfile, type NudgePayload, type RmNudgeEvent } from "@/lib/hrmsSync";
+import { resolveRmNudgeResumeKind } from "@/lib/rmNudgeResume";
 import {
     type EmployeeHubJourneyRecord,
     getCompletedHubRecords,
@@ -22,9 +24,9 @@ interface EmployeePortalContentProps {
     /** When in employee portal, which employee is "logged in" (from dropdown). */
     currentEmployeeId?: string | null;
     /** Full employee for offer computation (salary, grade) and nudge resume. */
-    currentEmployee?: EmployeeOfferProfile & { id: string; name?: string; email?: string; phone?: string } | null;
+    currentEmployee?: EmployeeOfferProfile & { id: string; name?: string; email?: string; phone?: string; journey?: string } | null;
     /** Called when employee clicks Resume/Update docs from nudge notification. */
-    onResumeFromNudge?: (emp: EmployeeOfferProfile & { id: string; name?: string; email?: string; phone?: string }, startStepId?: string | null) => void;
+    onResumeFromNudge?: (emp: EmployeeOfferProfile & { id: string; name?: string; email?: string; phone?: string; journey?: string }, startStepId?: string | null) => void;
     /** Called to start a fresh salary account journey for this employee (from employee portal). */
     onStartSalaryJourney?: () => void;
     /** Continue a journey row from My Journey Status (salary or loan). */
@@ -47,6 +49,12 @@ export default function EmployeePortalContent({ activePage, onNavigate, currentE
     React.useEffect(() => {
         setOfferNotification(employeeIdForDashboard ? getEmployeeOfferNotification(employeeIdForDashboard) : null);
     }, [employeeIdForDashboard]);
+    const [rmNudgeUiTick, setRmNudgeUiTick] = React.useState(0);
+    React.useEffect(() => {
+        const bump = () => setRmNudgeUiTick((t) => t + 1);
+        window.addEventListener("mmfsl-rm-nudge-updated", bump);
+        return () => window.removeEventListener("mmfsl-rm-nudge-updated", bump);
+    }, []);
 
     // Application / journey hub status (salary + loan journeys)
     const [appStatus, setAppStatus] = React.useState<"none" | "in_progress" | "completed">("none");
@@ -73,9 +81,11 @@ export default function EmployeePortalContent({ activePage, onNavigate, currentE
             if (
                 k.startsWith("loanJourneyBundle_") ||
                 k.startsWith("salaryJourneyBundle_") ||
-                k.startsWith("employeeJourneyStatus_")
+                k.startsWith("employeeJourneyStatus_") ||
+                k === "mmfsl_rm_nudge_events"
             ) {
                 refreshHubDerivedStatus();
+                if (k === "mmfsl_rm_nudge_events") setRmNudgeUiTick((t) => t + 1);
             }
         };
         window.addEventListener("storage", onStorage);
@@ -92,6 +102,36 @@ export default function EmployeePortalContent({ activePage, onNavigate, currentE
     const inProgressSalaryRecords = !employeeIdForDashboard
         ? []
         : getInProgressHubRecords(employeeIdForDashboard).filter(isSalaryHubJourneyRecord);
+
+    const rmNudgeEvents = React.useMemo(() => {
+        void rmNudgeUiTick;
+        if (!employeeIdForDashboard) return [];
+        return getRmNudgeEventsForEmployee(employeeIdForDashboard).filter((e) => e.source === "RM_NUDGE");
+    }, [employeeIdForDashboard, rmNudgeUiTick]);
+
+    const unreadRmNudgeEvents = React.useMemo(() => rmNudgeEvents.filter((e) => !e.read), [rmNudgeEvents]);
+
+    const handleResumeRmNudge = React.useCallback(
+        (ev: RmNudgeEvent) => {
+            markRmNudgeEventRead(ev.id);
+            const kind = resolveRmNudgeResumeKind(ev.journeyCategory);
+            if (kind === "my_journey_status") {
+                onNavigate("orders");
+                return;
+            }
+            const salaryRecs = employeeIdForDashboard
+                ? getInProgressHubRecords(employeeIdForDashboard).filter(isSalaryHubJourneyRecord)
+                : [];
+            if (salaryRecs.length > 0 && onContinueHubJourney) {
+                onContinueHubJourney(salaryRecs[0]);
+                return;
+            }
+            if (currentEmployee && onResumeFromNudge) {
+                onResumeFromNudge(currentEmployee, ev.resumeStartStepId ?? null);
+            }
+        },
+        [currentEmployee, employeeIdForDashboard, onContinueHubJourney, onNavigate, onResumeFromNudge],
+    );
 
     /**
      * Smart handler for "Open Salary Account":
@@ -142,7 +182,66 @@ export default function EmployeePortalContent({ activePage, onNavigate, currentE
                         </div>
                     </div>
                 )}
-                {nudge && currentEmployee && onResumeFromNudge && (
+                {unreadRmNudgeEvents.length > 0 && employeeId && (
+                    <div className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm overflow-hidden">
+                        <div className="px-5 py-3 border-b border-[#E5E7EB] bg-[#F9FAFB] flex items-center gap-2">
+                            <Bell className="w-4 h-4 text-dashboard-primary" />
+                            <h3 className="text-sm font-bold text-[#111827]">Notifications</h3>
+                            <span className="text-xs text-[#6B7280] ml-auto">{unreadRmNudgeEvents.length} unread</span>
+                        </div>
+                        <ul className="divide-y divide-[#E5E7EB]">
+                            {unreadRmNudgeEvents.map((ev) => (
+                                <li key={ev.id} className={cn("p-4 sm:p-5", !ev.read && "bg-[#F0F7FF]/60")}>
+                                    <div className="flex items-start gap-3">
+                                        <div
+                                            className={cn(
+                                                "w-2 h-2 rounded-full mt-1.5 shrink-0",
+                                                ev.read ? "bg-transparent" : "bg-dashboard-primary",
+                                            )}
+                                            aria-hidden
+                                        />
+                                        <div className="flex-1 min-w-0 space-y-2">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <h4 className="text-sm font-semibold text-[#111827]">{ev.notificationTitle}</h4>
+                                                {!ev.read && (
+                                                    <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-dashboard-primary text-white">New</span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-[#374151] leading-relaxed">{ev.message}</p>
+                                            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-[#6B7280]">
+                                                <div><span className="font-medium text-[#9CA3AF]">Ref:</span> {ev.referenceId}</div>
+                                                <div><span className="font-medium text-[#9CA3AF]">Journey:</span> {ev.journeyCategory}</div>
+                                                <div><span className="font-medium text-[#9CA3AF]">Channel:</span> {ev.mode}</div>
+                                                <div><span className="font-medium text-[#9CA3AF]">Sent:</span> {formatRmNudgeDisplayDate(ev.createdAt)}</div>
+                                                <div className="sm:col-span-2"><span className="font-medium text-[#9CA3AF]">Source:</span> RM nudge</div>
+                                            </dl>
+                                            <div className="flex flex-wrap gap-2 pt-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleResumeRmNudge(ev)}
+                                                    className="inline-flex items-center gap-2 h-9 px-4 rounded-lg text-sm font-semibold bg-dashboard-primary text-white hover:opacity-90"
+                                                >
+                                                    Resume Journey
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        markRmNudgeEventRead(ev.id);
+                                                        setRmNudgeUiTick((t) => t + 1);
+                                                    }}
+                                                    className="inline-flex items-center gap-2 h-9 px-3 rounded-lg text-sm text-[#6B7280] hover:bg-[#F3F4F6]"
+                                                >
+                                                    Mark as read
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                {unreadRmNudgeEvents.length === 0 && nudge && currentEmployee && onResumeFromNudge && (
                     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
                         <div className="flex items-start gap-3">
                             <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
@@ -412,38 +511,38 @@ function LegalModal({ title, content, onClose }: { title: string; content: strin
 }
 
 const MFIN_TNC = `Legal Notice
-VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. IF YOU DO NOT AGREE WITH ANY OF THESE TERMS, PLEASE DO NOT USE THIS SITE. IF YOU HAVE ANY QUERIES ABOUT THESE TERMS, PLEASE CONTACT SERVICE@mahindrafinance.com
+VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. IF YOU DO NOT AGREE WITH ANY OF THESE TERMS, PLEASE DO NOT USE THIS SITE. IF YOU HAVE ANY QUERIES ABOUT THESE TERMS, PLEASE CONTACT YOUR SBI RELATIONSHIP MANAGER OR VISIT WWW.SBI.CO.IN
 
-Disclaimer of Warranties, Inaccuracies or Errors | Mahindra Finance Disclaimer | Availability | Third Party Interaction and Links to Third Party Sites | Copyrights | Trademarks | General Terms and Conditions | Applicable Law and Jurisdiction
+Disclaimer of Warranties, Inaccuracies or Errors | SBI Bank Disclaimer | Availability | Third Party Interaction and Links to Third Party Sites | Copyrights | Trademarks | General Terms and Conditions | Applicable Law and Jurisdiction
 
-Although Mahindra Finance tries to ensure that all information and recommendations, whether in relation to the products, services, offerings or otherwise (hereinafter ‘Information’) provided as part of this website is correct at the time of its inclusion on the web site, Mahindra Finance does not guarantee the accuracy of the Information. Mahindra Finance makes no representations or warranties as to the completeness or accuracy of the Information.
+Although SBI Bank tries to ensure that all information and recommendations, whether in relation to the products, services, offerings or otherwise (hereinafter ‘Information’) provided as part of this website is correct at the time of its inclusion on the web site, SBI Bank does not guarantee the accuracy of the Information. SBI Bank makes no representations or warranties as to the completeness or accuracy of the Information.
 
-THIS WEBSITE IS PROVIDED TO YOU ON AN “AS IS” AND “WHERE-IS” BASIS, WITHOUT ANY WARRANTY. MAHINDRA FINANCE MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
+THIS WEBSITE IS PROVIDED TO YOU ON AN “AS IS” AND “WHERE-IS” BASIS, WITHOUT ANY WARRANTY. SBI BANK MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
 
 Copyrights
-This web site contains material, including text, graphics and sound, which is protected by copyright and/or other intellectual property rights. All copyright and other intellectual property rights in this material are either owned by Mahindra Finance or have been licensed to Mahindra Finance by the owner(s) of those rights.
+This web site contains material, including text, graphics and sound, which is protected by copyright and/or other intellectual property rights. All copyright and other intellectual property rights in this material are either owned by SBI Bank or have been licensed to SBI Bank by the owner(s) of those rights.
 
 You may:
 • use and display the materials only on your personal computer only for personal use.
 • print copies of the information on this site for your personal use.
 
 Trademarks
-The Mahindra FinanceTM and all products and logos denoted with TM are trademarks or registered trademarks of Mahindra Finance or its parent.
+The State Bank of India and SBI Bank marks and all products and logos denoted with TM are trademarks or registered trademarks of State Bank of India or its affiliates.
 
 General Terms and Conditions
-Mahindra Finance does not routinely monitor your postings to the web site but reserves the right to do so. Mahindra Finance reserves the right to terminate access to this web site at any time and without notice.
+SBI Bank does not routinely monitor your postings to the web site but reserves the right to do so. SBI Bank reserves the right to terminate access to this web site at any time and without notice.
 
 Applicable Law and Jurisdiction
 These terms and conditions are governed by and to be interpreted in accordance with laws of India. Any dispute shall be submitted to the jurisdiction of the courts located at Mumbai, India.`;
 
 const MFIN_PP = `Objective:
-Mahindra Finance may collect and store information about you when you visit our site, use our services, or view our online advertisements. The information which Mahindra Finance collects and store during normal use of the site is used to monitor use of the site and to help further development of our products and services.
+SBI Bank may collect and store information about you when you visit our site, use our services, or view our online advertisements. The information which SBI Bank collects and store during normal use of the site is used to monitor use of the site and to help further development of our products and services.
 
 Scope:
-This policy applies to information collected by Mahindra Finance through its websites.
+This policy applies to information collected by SBI Bank through its websites.
 
 Collected Information:
-Mahindra Finance may collect personal information that you submit to us through the Services, which include:
+SBI Bank may collect personal information that you submit to us through the Services, which include:
 • Name;
 • Home address;
 • Email address;
@@ -453,13 +552,13 @@ Mahindra Finance may collect personal information that you submit to us through 
 • Documents that you provide to us to verify your identity.
 
 Use of collected Personal Information:
-Mahindra Finance may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests, processing transactions, and providing transaction-related services.
+SBI Bank may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests, processing transactions, and providing transaction-related services.
 
 How We Share Personal Information:
 We may share personal information with organizations or individuals that perform functions on our behalf. We may also share personal information in response to a court order or as otherwise required by law.
 
 Personal Information Protection:
-Mahindra Finance use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.
+SBI Bank use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.
 
 Privacy Policy Changes:
 We reserve the right to change or update this policy at any time by placing a prominent notice on our site.`;

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { HelpCircle, Settings2, Globe, Shield, CreditCard, Calendar, ArrowLeft, Smartphone, Monitor } from "lucide-react";
 import { useBranding } from "@/app/context/BrandingContext";
 import { useJourneyConfig } from "@/app/context/JourneyConfigContext";
@@ -9,8 +8,8 @@ import { useJourney } from "@/app/context/JourneyContext";
 import JourneyProgressBar from "./JourneyProgressBar";
 import WhitelabelModal from "../shared/WhitelabelModal";
 import { cn } from "@/lib/utils";
-import hdfcLogoPng from "../../../../assets/hdfclogo.png";
 import { Button } from "@/app/components/ui/button";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
     const { config } = useBranding();
@@ -92,14 +91,19 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                             <div
                                 onClick={() => setShowViewSwitcher(!showViewSwitcher)}
                                 className={cn(
-                                    "flex items-center justify-center font-semibold transition-all duration-150 active:scale-95 cursor-pointer shrink-0",
-                                    config.preset === 'neobrutalist' ? "shadow-[4px_4px_0_0_#000] border-2 border-black" : "",
-                                    "h-[calc(var(--journey-header-h)-16px)] max-h-10 w-auto"
+                                    "flex items-center justify-center shrink-0 cursor-pointer transition-all duration-150 active:scale-95",
+                                    config.preset === 'neobrutalist'
+                                        ? "shadow-[4px_4px_0_0_#000] border-2 border-black bg-white px-2 py-1 font-semibold h-[calc(var(--journey-header-h)-16px)] max-h-10 w-auto"
+                                        : "max-h-11",
                                 )}
-                                style={{ borderRadius: config.preset === 'neobrutalist' ? '0px' : `${config.borderRadius}px` }}
+                                style={
+                                    config.preset === 'neobrutalist'
+                                        ? { borderRadius: '0px' }
+                                        : undefined
+                                }
                                 title="Click to switch between desktop and mobile view"
                             >
-                                <span className="text-sm font-bold tracking-wide" style={{ color: '#22509F' }}>SBI Bank</span>
+                                <SbiSidebarSymbol priority />
                             </div>
                         </div>
 
@@ -178,7 +182,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                         backgroundColor: journeyType === 'personal-loan' ? 'white' : 'transparent'
                     }}
                 >
-                    {/* Journey Background - Mahindra Finance gradient */}
+                    {/* Journey Background - SBI-themed gradient */}
                     {journeyType !== 'personal-loan' && viewMode === 'desktop' && (
                         <div
                             className="absolute inset-0 z-0 pointer-events-none"

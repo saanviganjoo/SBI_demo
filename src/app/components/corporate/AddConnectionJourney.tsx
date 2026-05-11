@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { 
     Link2, 
     ChevronDown, 
@@ -23,11 +23,97 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const DATA_MODEL_SECTION_ORDER = ["Salary Details", "Personal Information", "Employment Details"] as const;
+
+const SALARY_DETAIL_FIELDS_LIST = [
+    "Basic",
+    "House Rent Allowance",
+    "Special Allowance",
+    "Medical Allowance",
+    "Dearness Allowance",
+    "Flexi Basket Allowance",
+    "Travel Allowance",
+    "Other Allowance",
+    "Gratuity",
+    "Gross Pay",
+    "Net Pay",
+    "Fixed Pay",
+    "PF Deductions",
+    "ESI",
+    "Miscellaneous Deduction",
+    "Labour Welfare Fund",
+    "Professional Tax",
+    "NPS",
+    "Joining Bonus",
+    "Miscellaneous Bonus",
+    "Performance Bonus",
+    "Referal Bonus",
+    "Relocation Bonus",
+    "Retention Bonus",
+    "Employee contribution %",
+    "Employer contribution %",
+    "Employee contribution till date",
+    "Employer contribution till date",
+    "Tax Regime",
+    "Raw",
+] as const;
+
+const PERSONAL_INFO_FIELDS_LIST = [
+    "Name",
+    "Work Email",
+    "Employee ID",
+    "Date of Birth",
+    "Gender",
+    "Marital Status",
+    "Blood Group",
+    "Personal Email",
+    "Phone Number",
+    "Emergency Contact",
+    "Present Address",
+    "Permanent Address",
+    "Nationality",
+    "Aadhar Number",
+    "PAN Number",
+    "Passport Details",
+] as const;
+
+const PERSONAL_MANDATORY_FIELDS = new Set<string>(["Name", "Work Email", "Employee ID"]);
+
+function getOptionalFieldsForDataSection(cat: string): string[] {
+    switch (cat) {
+        case "Salary Details":
+            return [...SALARY_DETAIL_FIELDS_LIST];
+        case "Personal Information":
+            return PERSONAL_INFO_FIELDS_LIST.filter((f) => !PERSONAL_MANDATORY_FIELDS.has(f));
+        default:
+            return [];
+    }
+}
+
+function getDataSectionTriState(cat: string, selectedFields: Record<string, boolean>): "all" | "some" | "none" {
+    const optional = getOptionalFieldsForDataSection(cat);
+    if (optional.length === 0) return "none";
+    let selectedCount = 0;
+    for (const f of optional) {
+        if (selectedFields[f]) selectedCount++;
+    }
+    if (selectedCount === 0) return "none";
+    if (selectedCount === optional.length) return "all";
+    return "some";
+}
+
+export type ConnectionFlowCompletionPayload = {
+    corporate: string;
+    hrms: string | null;
+    transferMethod: "hrms" | "csv" | "sftp";
+    mode: "invite" | "setup";
+};
+
 interface AddConnectionJourneyProps {
-    onComplete: (data: any) => void;
+    onComplete: (data: ConnectionFlowCompletionPayload) => void;
     onCancel: () => void;
     onAddNewCorporate: () => void;
-    corporates: readonly string[];
+    corporateOptions: ReadonlyArray<{ name: string; referenceId?: string }>;
     hrmsIntegrations: Array<{ name: string; type: string }>;
 }
 
@@ -40,7 +126,7 @@ type Step =
     | "data_model" 
     | "success";
 
-export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, corporates, hrmsIntegrations }: AddConnectionJourneyProps) {
+export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, corporateOptions, hrmsIntegrations }: AddConnectionJourneyProps) {
     const [step, setStep] = useState<Step>("selection");
     const [activeTab, setActiveTab] = useState<"invite" | "setup">("invite");
     const [searchQuery, setSearchQuery] = useState("");
@@ -77,9 +163,26 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
         "Employee ID": true
     });
 
-    const filteredCorporates = corporates.filter(c => 
-        c.toLowerCase().includes(searchQuery.toLowerCase())
+    const sectionParentInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+    useLayoutEffect(() => {
+        for (const cat of DATA_MODEL_SECTION_ORDER) {
+            const el = sectionParentInputRefs.current[cat];
+            if (!el) continue;
+            el.indeterminate = getDataSectionTriState(cat, selectedFields) === "some";
+        }
+    }, [selectedFields]);
+
+    const filteredCorporateOptions = corporateOptions.filter((o) =>
+        o.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
+
+    useEffect(() => {
+        if (!selectedCorporate) return;
+        const opt = corporateOptions.find((o) => o.name === selectedCorporate);
+        const ref = opt?.referenceId?.trim();
+        setFormData((fd) => ({ ...fd, referenceId: ref ?? "" }));
+    }, [selectedCorporate, corporateOptions]);
 
     const filteredHrms = hrmsIntegrations.filter(h => 
         h.name.toLowerCase().includes(hrmsSearch.toLowerCase())
@@ -108,7 +211,13 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
         } else if (step === "data_model") {
             setStep("success");
         } else if (step === "success") {
-            onComplete({ ...formData, ...configData, corporate: selectedCorporate, hrms: selectedHrms, mode: activeTab });
+            const transferForPayload: "hrms" | "csv" | "sftp" = activeTab === "invite" ? "hrms" : transferMethod;
+            onComplete({
+                corporate: selectedCorporate,
+                hrms: selectedHrms,
+                transferMethod: transferForPayload,
+                mode: activeTab,
+            });
         }
     };
 
@@ -129,14 +238,26 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
         return false;
     };
 
-    const toggleCategory = (cat: string) => {
-        setExpandedCategories(prev => 
-            prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
-        );
+    const toggleSectionExpanded = (cat: string) => {
+        setExpandedCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
+    };
+
+    const toggleSectionParentCheckbox = (cat: string) => {
+        const optional = getOptionalFieldsForDataSection(cat);
+        if (optional.length === 0) return;
+        const tri = getDataSectionTriState(cat, selectedFields);
+        const turnOn = tri !== "all";
+        setSelectedFields((prev) => {
+            const next = { ...prev };
+            for (const f of optional) {
+                next[f] = turnOn;
+            }
+            return next;
+        });
     };
 
     const toggleField = (field: string) => {
-        setSelectedFields(prev => ({ ...prev, [field]: !prev[field] }));
+        setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }));
     };
 
     return (
@@ -168,7 +289,7 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                     {step === "connecting" && (
                         <div className="absolute inset-0 z-50 bg-black/5 flex items-center justify-center p-6">
                             <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-lg w-full text-center">
-                                <h2 className="text-2xl font-bold text-[#111827] mb-8">Connecting {selectedHrms} With Mahindra Finance</h2>
+                                <h2 className="text-2xl font-bold text-[#111827] mb-8">Connecting {selectedHrms} With SBI Bank</h2>
                                 <div className="w-full h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden relative">
                                     <div className="absolute inset-0 bg-dashboard-primary animate-progress-loading" />
                                 </div>
@@ -219,7 +340,7 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                                         {showCorporateDropdown && (
                                             <div className="absolute z-10 left-0 right-0 mt-2 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
                                                 <div className="p-2 border-b border-[#E5E7EB]"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" /><input autoFocus placeholder="Search" value={searchQuery} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)} className="w-full h-9 pl-9 pr-4 text-sm outline-none" /></div></div>
-                                                <div className="max-h-60 overflow-y-auto">{filteredCorporates.map(c => (<button key={c} onClick={() => { setSelectedCorporate(c); setShowCorporateDropdown(false); }} className="w-full px-4 py-2.5 text-left text-sm text-[#374151] hover:bg-[#F9FAFB] transition-colors">{c}</button>))}</div>
+                                                <div className="max-h-60 overflow-y-auto">{filteredCorporateOptions.map((o) => (<button key={o.name} type="button" onClick={() => { setSelectedCorporate(o.name); setShowCorporateDropdown(false); }} className="w-full px-4 py-2.5 text-left text-sm text-[#374151] hover:bg-[#F9FAFB] transition-colors">{o.name}</button>))}</div>
                                             </div>
                                         )}
                                     </div>
@@ -469,57 +590,82 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                                     <p className="text-sm text-[#374151]">Configure the data points you want to sync from <strong>{selectedHrms}</strong>. You can update these later in Data Models.</p>
                                 </div>
 
-                                {["Salary Details", "Personal Information", "Employment Details"].map((cat) => (
+                                {DATA_MODEL_SECTION_ORDER.map((cat) => {
+                                    const tri = getDataSectionTriState(cat, selectedFields);
+                                    const optionalFields = getOptionalFieldsForDataSection(cat);
+                                    const hasOptionalFields = optionalFields.length > 0;
+                                    const expanded = expandedCategories.includes(cat);
+                                    const parentChecked = hasOptionalFields && tri === "all";
+                                    return (
                                     <div key={cat} className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
-                                        <div 
-                                            onClick={() => toggleCategory(cat)}
-                                            className="px-6 py-4 bg-[#F9FAFB] flex items-center justify-between cursor-pointer group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="relative flex items-center justify-center">
-                                                    <input type="checkbox" className="sr-only" checked={expandedCategories.includes(cat)} readOnly />
-                                                    <div className={cn("w-5 h-5 rounded border-2 transition-all", expandedCategories.includes(cat) ? "bg-dashboard-primary border-dashboard-primary" : "bg-white border-[#D1D5DB]")} />
-                                                    {expandedCategories.includes(cat) && <Check className="absolute w-3.5 h-3.5 text-white" />}
-                                                </div>
-                                                <div>
+                                        <div className="px-6 py-4 bg-[#F9FAFB] flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-4 min-w-0 flex-1">
+                                                <label
+                                                    className={cn(
+                                                        "relative inline-flex shrink-0 items-center justify-center rounded",
+                                                        !hasOptionalFields ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                                                    )}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <input
+                                                        ref={(el) => {
+                                                            sectionParentInputRefs.current[cat] = el;
+                                                        }}
+                                                        type="checkbox"
+                                                        className="sr-only"
+                                                        checked={parentChecked}
+                                                        disabled={!hasOptionalFields}
+                                                        onChange={() => toggleSectionParentCheckbox(cat)}
+                                                        aria-label={`Select all fields in ${cat}`}
+                                                    />
+                                                    <span
+                                                        className={cn(
+                                                            "flex h-5 w-5 items-center justify-center rounded border-2 transition-colors",
+                                                            tri === "all" && "border-dashboard-primary bg-dashboard-primary",
+                                                            tri === "none" && "border-[#D1D5DB] bg-white",
+                                                            tri === "some" && "border-dashboard-primary/50 bg-dashboard-primary/10",
+                                                        )}
+                                                        aria-hidden
+                                                    >
+                                                        {tri === "all" && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                                                        {tri === "some" && <span className="h-0.5 w-2.5 rounded-full bg-dashboard-primary" />}
+                                                    </span>
+                                                </label>
+                                                <button type="button" className="min-w-0 flex-1 text-left" onClick={() => toggleSectionExpanded(cat)}>
                                                     <h3 className="font-bold text-[#111827]">{cat}</h3>
                                                     <p className="text-xs text-[#6B7280]">Configure {cat.toLowerCase()} sync fields</p>
-                                                </div>
+                                                </button>
                                             </div>
-                                            {expandedCategories.includes(cat) ? <ChevronUp className="w-5 h-5 text-[#6B7280]" /> : <ChevronDown className="w-5 h-5 text-[#6B7280]" />}
+                                            <button
+                                                type="button"
+                                                className="shrink-0 rounded-lg p-1 text-[#6B7280] transition-colors hover:bg-[#E5E7EB]/60"
+                                                aria-expanded={expanded}
+                                                aria-label={expanded ? "Collapse section" : "Expand section"}
+                                                onClick={() => toggleSectionExpanded(cat)}
+                                            >
+                                                {expanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                            </button>
                                         </div>
-                                        {expandedCategories.includes(cat) && (
-                                            <div className="p-8 border-t border-[#E5E7EB]">
+                                        {expanded && (
+                                            <div className="border-t border-[#E5E7EB] p-8">
                                                 {cat === "Salary Details" && (
-                                                    <div className="space-y-8">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-5 h-5 rounded border-2 border-dashboard-primary bg-dashboard-primary flex items-center justify-center">
-                                                                <Check className="w-3.5 h-3.5 text-white" />
-                                                            </div>
+                                                    <div className="space-y-6">
+                                                        <div className="flex items-center gap-3 border-b border-[#F3F4F6] pb-4">
                                                             <span className="font-bold text-[#111827]">CTC</span>
                                                         </div>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6">
-                                                            {[
-                                                                "Basic", "House Rent Allowance", "Special Allowance", "Medical Allowance",
-                                                                "Dearness Allowance", "Flexi Basket Allowance", "Travel Allowance", "Other Allowance",
-                                                                "Gratuity", "Gross Pay", "Net Pay", "Fixed Pay",
-                                                                "PF Deductions", "ESI", "Miscellaneous Deduction", "Labour Welfare Fund",
-                                                                "Professional Tax", "NPS", "Joining Bonus", "Miscellaneous Bonus",
-                                                                "Performance Bonus", "Referal Bonus", "Relocation Bonus", "Retention Bonus",
-                                                                "Employee contribution %", "Employer contribution %", "Employee contribution till date", "Employer contribution till date",
-                                                                "Tax Regime", "Raw"
-                                                            ].map(field => (
-                                                                <label key={field} className="flex items-center justify-between cursor-pointer group">
-                                                                    <span className="text-sm text-[#374151] group-hover:text-dashboard-primary transition-colors">{field}</span>
+                                                        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 md:grid-cols-4">
+                                                            {SALARY_DETAIL_FIELDS_LIST.map((field) => (
+                                                                <label key={field} className="group flex cursor-pointer items-center justify-between">
+                                                                    <span className="text-sm text-[#374151] transition-colors group-hover:text-dashboard-primary">{field}</span>
                                                                     <div className="relative flex items-center justify-center">
-                                                                        <input 
-                                                                            type="checkbox" 
-                                                                            className="sr-only" 
-                                                                            checked={selectedFields[field] || false}
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="sr-only"
+                                                                            checked={!!selectedFields[field]}
                                                                             onChange={() => toggleField(field)}
                                                                         />
-                                                                        <div className={cn("w-5 h-5 rounded border-2 transition-all", selectedFields[field] ? "bg-dashboard-primary/10 border-dashboard-primary/30" : "bg-white border-[#E5E7EB] group-hover:border-dashboard-primary/30")} />
-                                                                        {selectedFields[field] && <div className="absolute w-2 h-2 rounded-full bg-dashboard-primary" />}
+                                                                        <div className={cn("w-5 h-5 rounded border-2 transition-all", selectedFields[field] ? "border-dashboard-primary/30 bg-dashboard-primary/10" : "border-[#E5E7EB] bg-white group-hover:border-dashboard-primary/30")} />
+                                                                        {selectedFields[field] && <div className="absolute h-2 w-2 rounded-full bg-dashboard-primary" />}
                                                                     </div>
                                                                 </label>
                                                             ))}
@@ -527,37 +673,32 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                                                     </div>
                                                 )}
                                                 {cat === "Personal Information" && (
-                                                    <div className="space-y-8">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-5 h-5 rounded border-2 border-dashboard-primary bg-dashboard-primary flex items-center justify-center">
-                                                                <Check className="w-3.5 h-3.5 text-white" />
-                                                            </div>
+                                                    <div className="space-y-6">
+                                                        <div className="flex items-center gap-3 border-b border-[#F3F4F6] pb-4">
                                                             <span className="font-bold text-[#111827]">Personal Info</span>
                                                         </div>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6">
-                                                            {[
-                                                                "Name", "Work Email", "Employee ID", "Date of Birth",
-                                                                "Gender", "Marital Status", "Blood Group", "Personal Email",
-                                                                "Phone Number", "Emergency Contact", "Present Address", "Permanent Address",
-                                                                "Nationality", "Aadhar Number", "PAN Number", "Passport Details"
-                                                            ].map(field => {
-                                                                const isMandatory = ["Name", "Work Email", "Employee ID"].includes(field);
+                                                        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 md:grid-cols-4">
+                                                            {PERSONAL_INFO_FIELDS_LIST.map((field) => {
+                                                                const isMandatory = PERSONAL_MANDATORY_FIELDS.has(field);
                                                                 return (
-                                                                    <label key={field} className={cn("flex items-center justify-between group", isMandatory ? "cursor-not-allowed opacity-80" : "cursor-pointer")}>
+                                                                    <label
+                                                                        key={field}
+                                                                        className={cn("group flex items-center justify-between", isMandatory ? "cursor-not-allowed opacity-80" : "cursor-pointer")}
+                                                                    >
                                                                         <div className="flex flex-col">
                                                                             <span className={cn("text-sm text-[#374151] transition-colors", !isMandatory && "group-hover:text-dashboard-primary")}>{field}</span>
-                                                                            {isMandatory && <span className="text-[10px] text-dashboard-primary font-medium mt-0.5">Mandatory</span>}
+                                                                            {isMandatory && <span className="mt-0.5 text-[10px] font-medium text-dashboard-primary">Mandatory</span>}
                                                                         </div>
                                                                         <div className="relative flex items-center justify-center">
-                                                                            <input 
-                                                                                type="checkbox" 
-                                                                                className="sr-only" 
-                                                                                checked={selectedFields[field] || isMandatory}
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="sr-only"
+                                                                                checked={!!selectedFields[field] || isMandatory}
                                                                                 onChange={() => !isMandatory && toggleField(field)}
                                                                                 disabled={isMandatory}
                                                                             />
-                                                                            <div className={cn("w-5 h-5 rounded border-2 transition-all", (selectedFields[field] || isMandatory) ? "bg-dashboard-primary/10 border-dashboard-primary/30" : "bg-white border-[#E5E7EB]", !isMandatory && "group-hover:border-dashboard-primary/30")} />
-                                                                            {(selectedFields[field] || isMandatory) && <div className="absolute w-2 h-2 rounded-full bg-dashboard-primary" />}
+                                                                            <div className={cn("w-5 h-5 rounded border-2 transition-all", (selectedFields[field] || isMandatory) ? "border-dashboard-primary/30 bg-dashboard-primary/10" : "border-[#E5E7EB] bg-white", !isMandatory && "group-hover:border-dashboard-primary/30")} />
+                                                                            {(selectedFields[field] || isMandatory) && <div className="absolute h-2 w-2 rounded-full bg-dashboard-primary" />}
                                                                         </div>
                                                                     </label>
                                                                 );
@@ -573,7 +714,8 @@ export function AddConnectionJourney({ onComplete, onCancel, onAddNewCorporate, 
                                             </div>
                                         )}
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
 

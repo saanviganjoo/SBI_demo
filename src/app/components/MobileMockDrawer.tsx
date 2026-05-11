@@ -6,6 +6,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Smartphone, MessageSquare, Minimize2, Bell, Send, Wifi, Battery, Mail, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function MobileMockDrawer() {
@@ -117,9 +118,7 @@ export default function MobileMockDrawer() {
                       exit={{ y: -100, opacity: 0, scale: 0.9 }}
                       className="absolute top-0 left-4 right-4 z-[40] bg-white/95 backdrop-blur-xl p-5 rounded-[28px] shadow-2xl border border-white flex items-center gap-5 ring-1 ring-slate-200/50"
                     >
-                      <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
-                        <span className="w-7 text-center text-xs font-bold text-white">SBI</span>
-                      </div>
+                      <SbiSidebarSymbol boxClassName="h-12 w-12" priority />
                       <div className="flex-1 overflow-hidden">
                         <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">SBI Bank</p>
                         <p className="text-xs font-extrabold text-slate-800 truncate leading-tight">{notifications[0].body}</p>

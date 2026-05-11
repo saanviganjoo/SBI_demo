@@ -569,7 +569,7 @@ const DEFAULT_JOURNEY_CONFIG: JourneyConfigState = {
     provider: "bank" as ModuleProvider,
   })),
   ux: DEFAULT_UX,
-  logoUrl: null,
+  logoUrl: "/sbi-official-logo.png",
   extractedTheme: null,
   ctaLabels: { ...DEFAULT_CTA_LABELS, ...IDFC_JOURNEY_PRESET.ctaLabels },
   stepTitles: { ...DEFAULT_STEP_TITLES, ...IDFC_JOURNEY_PRESET.stepTitles } as StepTitles,

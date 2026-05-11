@@ -4,6 +4,7 @@ import React from "react";
 import { useJourney } from "@/app/context/JourneyContext";
 import { ArrowRight, Smartphone, HelpCircle, User, Globe, ShieldCheck, Clock, FileText } from "lucide-react";
 import { motion } from "framer-motion";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
 
 export default function StepMahindraLanding() {
   const { nextStep } = useJourney();
@@ -24,8 +25,9 @@ export default function StepMahindraLanding() {
 
       {/* Main Navigation */}
       <header className="w-full bg-white text-slate-900 py-3 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm border-b border-slate-100">
-        <div className="flex flex-col">
-          <img src="/MMFSL.png" alt="Mahindra Finance" className="h-6 md:h-8 w-auto object-contain" />
+        <div className="flex items-center gap-2">
+          <SbiSidebarSymbol boxClassName="h-9 w-9 md:h-10 md:w-10" priority />
+          <span className="font-bold text-slate-900 text-base md:text-lg tracking-tight">SBI Bank</span>
         </div>
 
         <button 

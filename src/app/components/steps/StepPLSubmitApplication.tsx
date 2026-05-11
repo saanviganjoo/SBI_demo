@@ -21,7 +21,7 @@ export default function StepPLSubmitApplication() {
   const summary = [
     { label: "Selected Plan", value: formData.selectedPlan ? `${formData.selectedPlan.amount} for ${formData.selectedPlan.tenure}` : "₹10L for 48 months" },
     { label: "eNACH Method", value: formData.enachMethod || "UPI eMandate" },
-    { label: "Disbursal Account", value: "Mahindra Finance Salary Account" },
+    { label: "Disbursal Account", value: "SBI Salary Account" },
   ];
 
   return (
@@ -54,7 +54,7 @@ export default function StepPLSubmitApplication() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-xs text-slate-500 text-center px-8">By clicking "Confirm & Continue", you agree to the Terms & Conditions and authorize Mahindra Finance to process your application.</p>
+            <p className="text-xs text-slate-500 text-center px-8">By clicking "Confirm & Continue", you agree to the Terms & Conditions and authorize SBI Bank to process your application.</p>
             <Button 
               onClick={handleSubmit} 
               className="w-full bg-[#EE1B24] hover:bg-[#D61820] text-white h-14 text-lg font-bold rounded-xl shadow-lg shadow-red-100 transition-all active:scale-[0.98]"

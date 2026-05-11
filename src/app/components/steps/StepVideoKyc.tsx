@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 export default function StepVideoKyc() {
     const { nextStep, setBottomBarContent, updateFormData, formData } = useJourney();
     const { config } = useJourneyConfig();
-    const bankName = config.bankName || "Mahindra Finance";
+    const bankName = config.bankName || "SBI Bank";
     const [isConnecting, setIsConnecting] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);

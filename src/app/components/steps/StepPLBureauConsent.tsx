@@ -11,25 +11,25 @@ import LegalConsent from "@/app/components/shared/LegalConsent";
 const TNC_CONTENT = `VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. 
 
 Disclaimer of Warranties, Inaccuracies or Errors
-Although Mahindra Finance tries to ensure that all information and recommendations provided as part of this website is correct at the time of its inclusion on the web site, Mahindra Finance does not guarantee the accuracy of the Information. Mahindra Finance makes no representations or warranties as to the completeness or accuracy of the Information.
+Although SBI Bank tries to ensure that all information and recommendations provided as part of this website is correct at the time of its inclusion on the web site, SBI Bank does not guarantee the accuracy of the Information. SBI Bank makes no representations or warranties as to the completeness or accuracy of the Information.
 
 Privacy Policy
-Personal details provided to Mahindra Finance through this web site will only be used in accordance with our privacy policy. Please read this carefully before going on. By providing your personal details to us you are consenting to its use in accordance with our privacy policy.
+Personal details provided to SBI Bank through this web site will only be used in accordance with our privacy policy. Please read this carefully before going on. By providing your personal details to us you are consenting to its use in accordance with our privacy policy.
 
 Applicable Law and Jurisdiction
 These terms and conditions are governed by and to be interpreted in accordance with laws of India. You agree, in the event of any dispute arising in relation to these terms and conditions or any dispute arising in relation to the web site whether in contract or tort or otherwise, to submit to the jurisdiction of the courts located at Mumbai, India.`;
 
 const PRIVACY_CONTENT = `Objective:
-Mahindra Finance may collect and store information about you when you visit our site, use our services, or view our online advertisements. 
+SBI Bank may collect and store information about you when you visit our site, use our services, or view our online advertisements. 
 
 Collected Information:
-Mahindra Finance may collect personal information that you submit to us through the Services, which include: Name, Home address, Email address, Telephone number, Date of birth, Job position, Occupation, Company.
+SBI Bank may collect personal information that you submit to us through the Services, which include: Name, Home address, Email address, Telephone number, Date of birth, Job position, Occupation, Company.
 
 Use of collected Personal Information:
-Mahindra Finance may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests for unique products and services.
+SBI Bank may use the personal information that is collected from you to provide requested products and services and for our internal business purposes, including responding to your requests for unique products and services.
 
 Personal Information Protection:
-Mahindra Finance use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.`;
+SBI Bank use commercially reasonable security measures (including physical, electronic and procedural measures) to help safeguard personal information against loss, misuse, damage or modification and unauthorized access or disclosure.`;
 
 export default function StepPLBureauConsent() {
   const { nextStep } = useJourney();
@@ -71,7 +71,7 @@ export default function StepPLBureauConsent() {
           
           <LegalConsent
             id="tnc"
-            label="I agree to the Mahindra Finance Loan Terms and Conditions"
+            label="I agree to the SBI Bank Loan Terms and Conditions"
             checked={agreedTnc}
             onCheckedChange={setAgreedTnc}
             title="Terms and Conditions"
@@ -80,7 +80,7 @@ export default function StepPLBureauConsent() {
 
           <LegalConsent
             id="privacy"
-            label="I acknowledge the Mahindra Finance Privacy Policy"
+            label="I acknowledge the SBI Bank Privacy Policy"
             checked={agreedPrivacy}
             onCheckedChange={setAgreedPrivacy}
             title="Privacy Policy"

@@ -85,13 +85,47 @@ export function StatCard({
     );
 }
 
-export function HeaderCell({ label, hasFilter, className }: { label: string; hasFilter?: boolean; className?: string }) {
+export function HeaderCell({
+    label,
+    hasFilter,
+    subtitle,
+    stickyRight,
+    className,
+}: {
+    label: string;
+    hasFilter?: boolean;
+    /** Secondary line (e.g. Actions hint); keeps same header row alignment as single-line cells */
+    subtitle?: string;
+    /** Sticky right column header — use `top-0` with thead scroll so it aligns with the header row */
+    stickyRight?: boolean;
+    className?: string;
+}) {
     return (
-        <th className={cn("px-5 py-4 text-left font-semibold text-[#374151] whitespace-nowrap text-xs uppercase tracking-wide", className)}>
-            <div className="flex items-center gap-2">
-                {label}
-                {hasFilter && <Filter className="w-3.5 h-3.5" />}
-            </div>
+        <th
+            className={cn(
+                "px-5 py-4 align-middle text-left font-semibold text-[#374151] text-xs uppercase tracking-wide",
+                !subtitle && "whitespace-nowrap",
+                stickyRight &&
+                    "sticky top-0 right-0 z-[30] border-l border-[#E5E7EB] bg-[#F9FAFB] shadow-[-12px_0_20px_-12px_rgba(0,0,0,0.15)] min-w-[300px]",
+                className,
+            )}
+        >
+            {subtitle ? (
+                <div className="flex min-h-[2.5rem] flex-col justify-center gap-1">
+                    <div className="flex items-center gap-2 whitespace-nowrap">
+                        {label}
+                        {hasFilter && <Filter className="w-3.5 h-3.5 shrink-0" />}
+                    </div>
+                    <span className="max-w-[280px] text-[10px] font-medium normal-case leading-snug tracking-normal text-[#9CA3AF]">
+                        {subtitle}
+                    </span>
+                </div>
+            ) : (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                    {label}
+                    {hasFilter && <Filter className="w-3.5 h-3.5 shrink-0" />}
+                </div>
+            )}
         </th>
     );
 }

@@ -1,5 +1,5 @@
 /**
- * Seed data: 150+ employees per corporate for up to 3 corporates (Mahindra Finance demo).
+ * Seed data: 150+ employees per corporate for up to 3 corporates (SBI demo).
  * New corporates added via onboarding get different employee records (handled in Dashboard).
  */
 import { generateIndianPan } from "./panUtils";

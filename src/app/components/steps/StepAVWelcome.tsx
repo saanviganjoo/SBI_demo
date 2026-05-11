@@ -24,7 +24,7 @@ export default function StepAVWelcome() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome, {formData.firstName || "Rahul"}</h1>
           <p className="text-slate-500 font-medium max-w-xs mx-auto">
-            <span className="font-bold text-slate-800">Mahindra Finance</span> has invited you to verify your Address
+            <span className="font-bold text-slate-800">SBI Bank</span> has invited you to verify your Address
           </p>
         </div>
 

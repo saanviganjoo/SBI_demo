@@ -29,7 +29,8 @@ const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
 		primary: "#22509F",
 		secondary: "#1A3F7A",
 		accent: "#E8F0FB",
-		logo: "SBI",
+		logo: "sbi-official",
+		logoUrl: "/sbi-official-logo.png",
 		borderRadius: 8,
 		fontFamily: "Plus Jakarta Sans",
 		glassOpacity: 0.4,
@@ -46,7 +47,8 @@ const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
 		primary: "#004C8F",
 		secondary: "#0066AA",
 		accent: "#f5f5f5",
-		logo: "idfc",
+		logo: "sbi-official",
+		logoUrl: "/sbi-official-logo.png",
 		borderRadius: 8,
 		fontFamily: "Plus Jakarta Sans",
 		glassOpacity: 0.4,
@@ -63,7 +65,8 @@ const DEFAULT_CONFIGS: Record<Exclude<BankTheme, "custom">, BankConfig> = {
         primary: "#004C8F",
         secondary: "#0066AA",
         accent: "#f5f5f5",
-        logo: "hdfc",
+        logo: "sbi-official",
+        logoUrl: "/sbi-official-logo.png",
         borderRadius: 8,
         fontFamily: "Open Sans",
         glassOpacity: 0.4,
@@ -162,7 +165,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
                 : config.primary; // safe fallback if theme changes
         root.style.setProperty('--primary-bank-dark', primaryDark);
 
-        // Accent/secondary (Mahindra Finance: blue)
+        // Accent/secondary (SBI: blue)
         root.style.setProperty('--secondary-bank', config.secondary);
 
         // 4px / 8px radius system (buttons/inputs vs cards)

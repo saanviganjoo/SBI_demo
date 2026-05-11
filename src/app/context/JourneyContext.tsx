@@ -217,7 +217,7 @@ export const JourneyProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "initial",
-      title: "Mahindra Finance",
+      title: "SBI Bank",
       body: "Welcome! Start your premium account journey now.",
       timestamp: "Just now"
     }
@@ -732,7 +732,7 @@ export const JourneyProvider = ({ children }: { children: ReactNode }) => {
       maritalStatus: formData.maritalStatus,
     };
     if (isComplete) {
-      statusEntry.bankName = "Mahindra Finance";
+      statusEntry.bankName = "SBI Bank";
       statusEntry.accountNumber = "1" + empId.replace(/\D/g, "").padStart(10, "0") + "82";
       statusEntry.ifscCode = "IDFB0040101";
     }

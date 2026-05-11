@@ -30,7 +30,7 @@ export default function StepPLDisbursalAccount() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Where should we send the funds?</h1>
           <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-            Your Mahindra Finance Salary Account is pre-verified for instant disbursal within minutes.
+            Your SBI Salary Account is pre-verified for instant disbursal within minutes.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function StepPLDisbursalAccount() {
                 </span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               </div>
-              <p className="font-bold text-slate-900 text-lg truncate">Mahindra Salary Account</p>
+              <p className="font-bold text-slate-900 text-lg truncate">SBI Salary Account</p>
               <div className="flex items-center gap-4 mt-2">
                 <div>
                   <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest block mb-0.5">Account No.</span>
@@ -110,7 +110,7 @@ export default function StepPLDisbursalAccount() {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-3">
               <Info className="w-4 h-4 text-[#EE1B24] mt-0.5" />
               <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                Note: Verification may take up to 24 hours for non-Mahindra Finance accounts.
+                Note: Verification may take up to 24 hours for non-SBI Bank accounts.
               </p>
             </div>
           </div>

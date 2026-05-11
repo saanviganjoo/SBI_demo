@@ -3,7 +3,7 @@
 import React from "react";
 import ProfileSwitcher from "@/app/components/ProfileSwitcher";
 import CorporateOnboarding, { type OnboardedCorporate } from "@/app/components/corporate/CorporateOnboarding";
-import { AddConnectionJourney } from "@/app/components/corporate/AddConnectionJourney";
+import { AddConnectionJourney, type ConnectionFlowCompletionPayload } from "@/app/components/corporate/AddConnectionJourney";
 import EmployeePortalContent from "@/app/components/EmployeePortalContent";
 import type { EmployeeHubJourneyRecord } from "@/lib/employeeJourneyHub";
 import { openEmployeeLoanJourneyInNewTab, isLoanJourneyRouteType } from "@/lib/employeeJourneyHub";
@@ -47,7 +47,8 @@ import {
     FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getCurrentEmployeeIdFromJourney, setNudge as setNudgeStorage } from "@/lib/hrmsSync";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
+import { getCurrentEmployeeIdFromJourney, setNudge as setNudgeStorage, appendRmNudgeEvent, getUnreadRmNudgeCountForEmployee, getRmNudgeEventsForEmployee, formatRmNudgeDisplayDate, type RmNudgeMode, type RmNudgeEvent } from "@/lib/hrmsSync";
 import { DashboardPageContent } from "@/app/components/DashboardPageContent";
 
 // ─── Types ──────────────────────────────────────────────────────────────
@@ -382,7 +383,11 @@ type TabKey = "directory" | "accountOpened" | "analytics";
 type PageKey = "dashboard" | "connections" | "reporting" | "corporates" | "integrations" | "data-models" | "webhooks" | "diagnostics" | "rm-employees" | "rm-products" | "rm-analytics" | "hr-overview" | "hr-employees";
 
 const ONBOARDED_CORPORATES_KEY = "hdfc_onboarded_corporates";
+/** Seed corporates row overrides after HRMS connection (status / connections column). */
+const CORPORATE_PATCHES_KEY = "sbi_demo_corporate_row_patches_v1";
 const PORTAL_EMPLOYEE_ID_KEY = "mmfsl_portal_employee_id";
+
+type CorporateRowPatch = Partial<{ connections: string; status: "Active" | "Pending"; categories: string }>;
 // All corporate employees are always synced to RM dashboard (no HR manual share required)
 const HR_OWN_CORPORATE = "Chola Business Services"; // HR Portal sees only this corporate
 
@@ -411,6 +416,17 @@ export default function Dashboard() {
             return raw ? JSON.parse(raw) : [];
         } catch { return []; }
     });
+    const [corporatePatches, setCorporatePatches] = React.useState<Record<string, CorporateRowPatch>>(() => {
+        if (typeof window === "undefined") return {};
+        try {
+            const raw = localStorage.getItem(CORPORATE_PATCHES_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch { return {}; }
+    });
+    const [employeeNotifsOpen, setEmployeeNotifsOpen] = React.useState(false);
+    const employeeNotifsPanelRef = React.useRef<HTMLDivElement>(null);
+    const employeeNotifsSidebarBtnRef = React.useRef<HTMLButtonElement>(null);
+    const employeeNotifsHeaderBtnRef = React.useRef<HTMLButtonElement>(null);
     const [activeTab, setActiveTab] = React.useState<TabKey>("directory");
     const [selectedCorporate, setSelectedCorporate] = React.useState<string | null>(null);
     const [directoryPage, setDirectoryPage] = React.useState(1);
@@ -419,7 +435,37 @@ export default function Dashboard() {
     const [selectedEmployee, setSelectedEmployee] = React.useState<Employee | null>(null);
     const [employeeStatuses, setEmployeeStatuses] = React.useState<Record<string, JourneyStatus>>({});
     const [lastHrSyncAt, setLastHrSyncAt] = React.useState<string | null>(() => (typeof window !== "undefined" ? getSyncTimestamp() : null));
-    const [nudgeFeedback, setNudgeFeedback] = React.useState<string | null>(null);
+    const [rmNudgeEpoch, setRmNudgeEpoch] = React.useState(0);
+    React.useEffect(() => {
+        const bump = () => setRmNudgeEpoch((n) => n + 1);
+        window.addEventListener("mmfsl-rm-nudge-updated", bump);
+        return () => window.removeEventListener("mmfsl-rm-nudge-updated", bump);
+    }, []);
+
+    React.useEffect(() => {
+        try {
+            localStorage.setItem(CORPORATE_PATCHES_KEY, JSON.stringify(corporatePatches));
+        } catch {
+            /* ignore */
+        }
+    }, [corporatePatches]);
+
+    React.useEffect(() => {
+        if (!employeeNotifsOpen || portalMode !== "employee") return;
+        const onDoc = (e: MouseEvent) => {
+            const t = e.target as Node;
+            if (employeeNotifsSidebarBtnRef.current?.contains(t)) return;
+            if (employeeNotifsHeaderBtnRef.current?.contains(t)) return;
+            if (employeeNotifsPanelRef.current?.contains(t)) return;
+            setEmployeeNotifsOpen(false);
+        };
+        document.addEventListener("mousedown", onDoc);
+        return () => document.removeEventListener("mousedown", onDoc);
+    }, [employeeNotifsOpen, portalMode]);
+
+    const [rmToast, setRmToast] = React.useState<{ kind: "ok" | "err"; text: string } | null>(null);
+    const [sendingRmNudgeEmployeeId, setSendingRmNudgeEmployeeId] = React.useState<string | null>(null);
+    const [rmNudgeSendingMode, setRmNudgeSendingMode] = React.useState<RmNudgeMode | null>(null);
     const [selectedPortalEmployeeId, setSelectedPortalEmployeeId] = React.useState<string | null>(() => {
         if (typeof window === "undefined") return null;
         try {
@@ -475,6 +521,23 @@ export default function Dashboard() {
     React.useEffect(() => {
         if (selectedEmployee) refreshStatuses();
     }, [selectedEmployee?.id, refreshStatuses]);
+
+    const employeeRmUnread = React.useMemo(() => {
+        void rmNudgeEpoch;
+        if (portalMode !== "employee" || !selectedPortalEmployeeId) return 0;
+        return getUnreadRmNudgeCountForEmployee(selectedPortalEmployeeId);
+    }, [portalMode, selectedPortalEmployeeId, rmNudgeEpoch]);
+
+    const employeeRmNotifications = React.useMemo(() => {
+        void rmNudgeEpoch;
+        if (!selectedPortalEmployeeId) return [];
+        return getRmNudgeEventsForEmployee(selectedPortalEmployeeId);
+    }, [selectedPortalEmployeeId, rmNudgeEpoch]);
+
+    const showRmToast = React.useCallback((kind: "ok" | "err", text: string) => {
+        setRmToast({ kind, text });
+        window.setTimeout(() => setRmToast(null), 4200);
+    }, []);
 
 
     const handleRefreshInvites = React.useCallback(() => {
@@ -634,17 +697,71 @@ export default function Dashboard() {
         }
     };
 
-    /** Nudge employee to complete journey (FTNR – reminder). Employee sees notification in portal to resume + update documents. */
-    const handleNudge = (emp: Employee) => {
-        const status = employeeStatuses[emp.id] as (JourneyStatus & { currentStepId?: string }) | undefined;
-        setNudgeStorage(emp.id, {
-            nudgedAt: new Date().toISOString(),
-            startStepId: status?.status === "in_progress" ? status.currentStepId : undefined,
-            message: "Your RM has asked you to complete your application and submit any pending documents.",
-        });
-        setNudgeFeedback(`${emp.name} – reminder sent`);
-        setTimeout(() => setNudgeFeedback(null), 3000);
-    };
+    const handleSendRmNudge = React.useCallback(
+        (emp: Employee, mode: RmNudgeMode) => {
+            const invited = !!invitedEmployeeIds[emp.id];
+            const st = employeeStatuses[emp.id];
+            if (st?.status === "completed") {
+                showRmToast("err", "Journey already completed. Nudge not required.");
+                return;
+            }
+            if (st?.status !== "in_progress" && !invited) {
+                showRmToast("err", "No active journey found for this employee.");
+                return;
+            }
+            const phoneOk = !!(emp.phone && String(emp.phone).trim());
+            const emailOk = !!(emp.email && String(emp.email).trim());
+            if ((mode === "WhatsApp" || mode === "SMS") && !phoneOk) {
+                showRmToast("err", mode === "WhatsApp" ? "WhatsApp requires phone number." : "SMS requires phone number.");
+                return;
+            }
+            if (mode === "Email" && !emailOk) {
+                showRmToast("err", "Email requires official email ID.");
+                return;
+            }
+            if (sendingRmNudgeEmployeeId) return;
+
+            const jCat = getJourneyCategory(emp.journey).label;
+            const jStatus = getStatusBadge(emp.id, invited, employeeStatuses).label;
+            const resumeStartStepId = st?.status === "in_progress" ? st.currentStepId : undefined;
+
+            setSendingRmNudgeEmployeeId(emp.id);
+            setRmNudgeSendingMode(mode);
+            window.setTimeout(() => {
+                const title = "Complete journey through your favorite mode";
+                const message = `You have received a nudge from your RM via ${mode} to complete your ${jCat} journey. Please resume the journey through the ${mode} link shared with you.`;
+                const event: RmNudgeEvent = {
+                    id: `nudge_${Date.now()}_${emp.id.slice(-6)}`,
+                    employeeId: emp.id,
+                    employeeName: emp.name,
+                    referenceId: (emp.id.split("-")[1] || emp.id).slice(0, 12),
+                    journeyCategory: jCat,
+                    journeyStatus: jStatus,
+                    mode,
+                    createdAt: new Date().toISOString(),
+                    read: false,
+                    message,
+                    source: "RM_NUDGE",
+                    notificationTitle: title,
+                    resumeStartStepId,
+                };
+                appendRmNudgeEvent(event);
+                setNudgeStorage(emp.id, {
+                    nudgedAt: event.createdAt,
+                    startStepId: resumeStartStepId,
+                    message,
+                    mode,
+                    journeyCategory: jCat,
+                    notificationTitle: title,
+                    rmNudgeId: event.id,
+                });
+                setSendingRmNudgeEmployeeId(null);
+                setRmNudgeSendingMode(null);
+                showRmToast("ok", `Nudge sent to ${emp.name} via ${mode}`);
+            }, 700);
+        },
+        [employeeStatuses, invitedEmployeeIds, sendingRmNudgeEmployeeId, showRmToast],
+    );
 
     const goToPage = (p: PageKey) => {
         setActivePage(p);
@@ -666,6 +783,7 @@ export default function Dashboard() {
     }, [portalMode]);
 
     const handleAddNewCorporate = React.useCallback(() => {
+        setActivePage("corporates");
         setShowCorporateOnboarding(true);
         setShowAddConnectionJourney(false);
     }, []);
@@ -680,8 +798,55 @@ export default function Dashboard() {
         setActivePage("corporates");
     }, []);
 
+    const deriveConnectionsLabel = React.useCallback((payload: ConnectionFlowCompletionPayload): string => {
+        if (payload.mode === "invite") return "Manual";
+        if (payload.transferMethod !== "hrms") return "Manual";
+        return payload.hrms?.trim() || "Manual";
+    }, []);
+
+    const handleConnectionComplete = React.useCallback(
+        (payload: ConnectionFlowCompletionPayload) => {
+            const connectionsLabel = deriveConnectionsLabel(payload);
+            const categoriesLabel =
+                payload.mode !== "invite" && payload.transferMethod === "hrms" && payload.hrms?.trim()
+                    ? payload.hrms.trim()
+                    : undefined;
+
+            setOnboardedCorporates((prev) => {
+                const idx = prev.findIndex((c) => c.corporateName === payload.corporate);
+                if (idx < 0) return prev;
+                const next = [...prev];
+                next[idx] = {
+                    ...next[idx],
+                    status: "Active",
+                    connections: connectionsLabel,
+                    ...(categoriesLabel ? { categories: categoriesLabel } : {}),
+                };
+                try {
+                    localStorage.setItem(ONBOARDED_CORPORATES_KEY, JSON.stringify(next));
+                } catch {
+                    /* ignore */
+                }
+                return next;
+            });
+
+            setCorporatePatches((prev) => ({
+                ...prev,
+                [payload.corporate]: {
+                    ...prev[payload.corporate],
+                    status: "Active",
+                    connections: connectionsLabel,
+                    ...(categoriesLabel ? { categories: categoriesLabel } : {}),
+                },
+            }));
+
+            setShowAddConnectionJourney(false);
+        },
+        [deriveConnectionsLabel],
+    );
+
     const corporatesTableData = React.useMemo(() => {
-        const onboarded = onboardedCorporates.map((c) => ({
+        const onboardedRows = onboardedCorporates.map((c) => ({
             corporateName: c.corporateName,
             categories: c.categories,
             connections: c.connections,
@@ -691,12 +856,28 @@ export default function Dashboard() {
             corpCategory: c.corpCategory,
             kybStatus: c.kybStatus,
         }));
-        const all = [...onboarded, ...CORPORATES_TABLE_DATA];
+        const onboardedNames = new Set(onboardedRows.map((r) => r.corporateName));
+        const seedRows = CORPORATES_TABLE_DATA.filter((r) => !onboardedNames.has(r.corporateName));
+        const merged = [...onboardedRows, ...seedRows].map((row) => ({
+            ...row,
+            ...(corporatePatches[row.corporateName] || {}),
+        }));
         if (portalMode === "hr") {
-            return all.filter((c) => c.corporateName === HR_OWN_CORPORATE);
+            return merged.filter((c) => c.corporateName === HR_OWN_CORPORATE);
         }
-        return all;
-    }, [onboardedCorporates, portalMode]);
+        return merged;
+    }, [onboardedCorporates, corporatePatches, portalMode]);
+
+    const corporateDirectoryOptions = React.useMemo(() => {
+        const map = new Map<string, string | undefined>();
+        CORPORATES.forEach((n) => map.set(n, undefined));
+        onboardedCorporates.forEach((c) => {
+            map.set(c.corporateName, c.corporateReferenceId?.trim() || undefined);
+        });
+        return [...map.entries()]
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([name, referenceId]) => ({ name, referenceId }));
+    }, [onboardedCorporates]);
 
     // ─── Employee Profile View (RM/corporates only; HR uses inline detail) ──
     // Must be after all hooks to avoid React error #300 (fewer hooks than expected)
@@ -716,7 +897,18 @@ export default function Dashboard() {
     const currentPortalEmployee = employees.find(e => e.id === selectedPortalEmployeeId);
 
     return (
-        <div className="dashboard-portal-theme flex h-screen w-full bg-white text-[#374151] font-manrope overflow-hidden">
+        <div className="dashboard-portal-theme flex h-screen w-full bg-white text-[#374151] font-manrope overflow-hidden relative">
+            {portalMode === "rm" && rmToast && (
+                <div
+                    role="status"
+                    className={cn(
+                        "fixed top-16 right-6 z-[200] max-w-sm rounded-xl border px-4 py-3 shadow-lg text-sm font-medium",
+                        rmToast.kind === "ok" ? "bg-white border-emerald-200 text-emerald-900" : "bg-white border-red-200 text-red-900",
+                    )}
+                >
+                    {rmToast.text}
+                </div>
+            )}
             {/* Sidebar - RM vs HR */}
             <aside className="w-56 bg-white border-r border-[#E8EAED] flex flex-col flex-shrink-0 shadow-sm">
                 <div className="px-4 py-4 border-b border-[#E5E7EB]">
@@ -725,11 +917,9 @@ export default function Dashboard() {
                             <ProfileSwitcher />
                         </div>
                     )}
-                        <div className="flex items-center gap-3">
-                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shadow-sm bg-dashboard-primary text-white")}>
-                            <span className="font-bold text-sm">SBI</span>
-                        </div>
-                        <div>
+                    <div className="flex items-center gap-3 min-w-0">
+                        <SbiSidebarSymbol priority />
+                        <div className="min-w-0">
                             <span className="font-semibold text-[#111827]">SBI Bank</span>
                             <p className="text-[10px] text-[#9CA3AF] mt-0.5">{portalMode === "employee" || portalMode === "hr" ? "Employee benefits" : "Corporate banking"}</p>
                         </div>
@@ -751,6 +941,7 @@ export default function Dashboard() {
                         <>
                             <SidebarNavItem icon={BarChart2} label="Dashboard" active={activePage === "dashboard" && !showCorporateOnboarding} onClick={() => goToPage("dashboard")} />
                             <SidebarNavItem icon={Building2} label="Corporates" active={activePage === "corporates" && !showCorporateOnboarding} onClick={() => goToPage("corporates")} />
+                            <SidebarNavItem icon={Plus} label="New Corporate" active={showCorporateOnboarding} onClick={() => handleAddNewCorporate()} />
                             <SidebarNavItem icon={Plus} label="New Connection" active={showAddConnectionJourney} onClick={() => { setShowAddConnectionJourney(true); setShowCorporateOnboarding(false); }} />
                             <SidebarNavItem icon={Users} label="Employees" active={activePage === "rm-employees"} onClick={() => goToPage("rm-employees")} />
                             <SidebarNavItem icon={Infinity} label="Integrations" active={activePage === "integrations"} onClick={() => goToPage("integrations")} />
@@ -775,10 +966,21 @@ export default function Dashboard() {
                     )}
                 </nav>
                 <div className="px-4 py-4 border-t border-[#E5E7EB] space-y-2">
-                    <button type="button" className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#F9FAFB] transition-colors text-left">
+                    <button
+                        ref={employeeNotifsSidebarBtnRef}
+                        type="button"
+                        onClick={() => {
+                            if (portalMode === "employee") setEmployeeNotifsOpen((o) => !o);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#F9FAFB] transition-colors text-left"
+                    >
                         <div className="relative">
                             <Bell className="w-5 h-5 text-[#6B7280]" />
-                            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">3</span>
+                            {(portalMode !== "employee" || employeeRmUnread > 0) && (
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-0.5 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
+                                    {portalMode === "employee" ? (employeeRmUnread > 9 ? "9+" : employeeRmUnread) : 3}
+                                </span>
+                            )}
                         </div>
                         <span className="text-sm font-medium text-[#374151]">Notifications</span>
                     </button>
@@ -822,6 +1024,39 @@ export default function Dashboard() {
                 </div>
             </aside>
 
+            {portalMode === "employee" && employeeNotifsOpen && (
+                <div
+                    ref={employeeNotifsPanelRef}
+                    className="fixed z-[350] left-56 bottom-[5.25rem] w-[min(calc(100vw-15rem),380px)] max-h-[min(50vh,440px)] flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-2xl overflow-hidden"
+                    role="dialog"
+                    aria-label="Notifications"
+                >
+                    <div className="px-4 py-3 border-b border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-[#111827]">Notifications</span>
+                        <span className="text-xs text-[#6B7280]">{employeeRmUnread} unread</span>
+                    </div>
+                    <div className="overflow-y-auto flex-1">
+                        {employeeRmNotifications.length === 0 ? (
+                            <p className="p-4 text-sm text-[#6B7280]">No notifications yet.</p>
+                        ) : (
+                            <ul className="divide-y divide-[#F3F4F6]">
+                                {employeeRmNotifications.map((ev) => (
+                                    <li key={ev.id} className={cn("px-4 py-3 text-sm", ev.read ? "bg-white" : "bg-[#F0F7FF]/50")}>
+                                        <p className="font-semibold text-[#111827]">{ev.notificationTitle}</p>
+                                        <p className="text-[#374151] mt-1 leading-relaxed">{ev.message}</p>
+                                        <p className="text-[10px] text-[#9CA3AF] mt-2">
+                                            {formatRmNudgeDisplayDate(ev.createdAt)}
+                                            <span className="mx-1">·</span>
+                                            {ev.read ? "Read" : "Unread"}
+                                        </p>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Top Bar */}
@@ -837,9 +1072,20 @@ export default function Dashboard() {
                         )}
                     </div>
                     <div className="flex items-center gap-3">
-                        <button type="button" className="p-2 rounded-lg hover:bg-[#F9FAFB] text-[#6B7280] relative">
+                        <button
+                            ref={employeeNotifsHeaderBtnRef}
+                            type="button"
+                            onClick={() => {
+                                if (portalMode === "employee") setEmployeeNotifsOpen((o) => !o);
+                            }}
+                            className="p-2 rounded-lg hover:bg-[#F9FAFB] text-[#6B7280] relative"
+                        >
                             <Bell className="w-5 h-5" />
-                            <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center px-1">4</span>
+                            {(portalMode !== "employee" || employeeRmUnread > 0) && (
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center px-1">
+                                    {portalMode === "employee" ? (employeeRmUnread > 9 ? "9+" : employeeRmUnread) : 4}
+                                </span>
+                            )}
                         </button>
                         <div className="flex items-center gap-2 pl-3 border-l border-[#E5E7EB]">
                             <div className="w-8 h-8 rounded-full bg-dashboard-primary flex items-center justify-center text-white text-xs font-bold">GS</div>
@@ -870,13 +1116,10 @@ export default function Dashboard() {
                         />
                     ) : showAddConnectionJourney ? (
                         <AddConnectionJourney
-                            onComplete={(data) => {
-                                console.log("Connection data:", data);
-                                setShowAddConnectionJourney(false);
-                            }}
+                            onComplete={handleConnectionComplete}
                             onCancel={() => setShowAddConnectionJourney(false)}
                             onAddNewCorporate={handleAddNewCorporate}
-                            corporates={CORPORATES}
+                            corporateOptions={corporateDirectoryOptions}
                             hrmsIntegrations={HRMS_INTEGRATIONS}
                         />
                     ) : selectedEmployee && portalMode === "hr" ? (
@@ -921,8 +1164,9 @@ export default function Dashboard() {
                             onHrSyncNow={handleHrSyncNow}
                             lastHrSyncAt={lastHrSyncAt}
                             onRetriggerJourney={handleRetriggerJourney}
-                            onNudge={handleNudge}
-                            nudgeFeedback={nudgeFeedback}
+                            onSendRmNudge={handleSendRmNudge}
+                            sendingRmNudgeEmployeeId={sendingRmNudgeEmployeeId}
+                            rmNudgeSendingMode={rmNudgeSendingMode}
                         />
                     )}
                 </div>

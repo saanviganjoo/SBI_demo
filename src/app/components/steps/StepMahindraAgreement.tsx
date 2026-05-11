@@ -45,7 +45,7 @@ export default function StepMahindraAgreement() {
               className="mt-1 w-5 h-5 sm:w-6 sm:h-6 rounded-md border-slate-300 text-[#EE1B24] focus:ring-[#EE1B24]"
             />
             <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 leading-relaxed uppercase tracking-tight">
-              I confirm the authenticity and validity of the documents submitted to Mahindra Finance. I agree that I have read and understood the above agreement.
+              I confirm the authenticity and validity of the documents submitted to SBI Bank. I agree that I have read and understood the above agreement.
             </span>
           </label>
         </div>

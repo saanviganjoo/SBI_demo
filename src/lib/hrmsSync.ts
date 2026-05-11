@@ -121,10 +121,34 @@ export function getBreOffersForEmployee(employeeId: string, profile?: EmployeeOf
 
 const NUDGE_KEY_PREFIX = "mmfsl_nudge_";
 
+export type RmNudgeMode = "WhatsApp" | "SMS" | "Email";
+
+export type RmNudgeSource = "RM_NUDGE";
+
+export interface RmNudgeEvent {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  referenceId: string;
+  journeyCategory: string;
+  journeyStatus: string;
+  mode: RmNudgeMode;
+  createdAt: string;
+  read: boolean;
+  message: string;
+  source: RmNudgeSource;
+  notificationTitle: string;
+  resumeStartStepId?: string;
+}
+
 export interface NudgePayload {
   nudgedAt: string;
   startStepId?: string;
   message?: string;
+  mode?: RmNudgeMode;
+  journeyCategory?: string;
+  notificationTitle?: string;
+  rmNudgeId?: string;
 }
 
 export function getNudge(employeeId: string): NudgePayload | null {
@@ -152,6 +176,100 @@ export function clearNudge(employeeId: string): void {
     localStorage.removeItem(NUDGE_KEY_PREFIX + employeeId);
   } catch {
     /* ignore */
+  }
+}
+
+const RM_NUDGE_EVENTS_KEY = "mmfsl_rm_nudge_events";
+
+function dispatchRmNudgeUpdated(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("mmfsl-rm-nudge-updated"));
+}
+
+export function getAllRmNudgeEvents(): RmNudgeEvent[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(RM_NUDGE_EVENTS_KEY);
+    const list = raw ? (JSON.parse(raw) as RmNudgeEvent[]) : [];
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+export function appendRmNudgeEvent(event: RmNudgeEvent): void {
+  if (typeof window === "undefined") return;
+  try {
+    const prev = getAllRmNudgeEvents();
+    localStorage.setItem(RM_NUDGE_EVENTS_KEY, JSON.stringify([event, ...prev]));
+    dispatchRmNudgeUpdated();
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getRmNudgeEventsForEmployee(employeeId: string): RmNudgeEvent[] {
+  return getAllRmNudgeEvents()
+    .filter((e) => e.employeeId === employeeId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function getLatestRmNudgeForEmployee(employeeId: string): RmNudgeEvent | null {
+  const list = getRmNudgeEventsForEmployee(employeeId);
+  return list[0] ?? null;
+}
+
+export function getUnreadRmNudgeCountForEmployee(employeeId: string): number {
+  return getRmNudgeEventsForEmployee(employeeId).filter((e) => !e.read).length;
+}
+
+export function markRmNudgeEventRead(eventId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const all = getAllRmNudgeEvents();
+    let changed = false;
+    const next = all.map((e) => {
+      if (e.id !== eventId) return e;
+      changed = true;
+      return { ...e, read: true };
+    });
+    if (changed) {
+      localStorage.setItem(RM_NUDGE_EVENTS_KEY, JSON.stringify(next));
+      dispatchRmNudgeUpdated();
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/** e.g. "11 May 2026, 1:52 PM" */
+export function formatRmNudgeDisplayDate(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return iso;
+  }
+}
+
+/** Relative label e.g. "Just now" for last nudge hint in RM UI */
+export function formatRmNudgeRelative(iso: string): string {
+  try {
+    const t = new Date(iso).getTime();
+    const diff = Date.now() - t;
+    if (diff < 60_000) return "Just now";
+    if (diff < 3600_000) return `${Math.floor(diff / 60_000)}m ago`;
+    if (diff < 86400_000) return `${Math.floor(diff / 3600_000)}h ago`;
+    return formatRmNudgeDisplayDate(iso);
+  } catch {
+    return "Recently";
   }
 }
 

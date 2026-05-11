@@ -11,6 +11,7 @@ import {
     Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SbiSidebarSymbol } from "@/app/components/branding/SbiOfficialLogo";
 import { openEmployeeLoanJourneyInNewTab } from "@/lib/employeeJourneyHub";
 
 /** Opens personal loan journey in a new tab (reuses modular loan opener; resumes in-progress bundle when present). */
@@ -123,9 +124,7 @@ export default function ProductMarketplaceDashboard({
                             <div className="absolute -inset-4 bg-white/10 rounded-[2.5rem] blur-2xl group-hover:bg-white/20 transition-all"></div>
                             <div className="relative w-64 h-36 rounded-2xl border border-white/20 shadow-2xl p-5 flex flex-col justify-between overflow-hidden backdrop-blur-sm" style={{ background: "rgba(255, 255, 255, 0.05)" }}>
                                 <div className="flex justify-between items-start">
-                                    <div className="w-10 h-7 rounded bg-white/10 flex items-center justify-center">
-                                        <div className="w-5 h-3 border border-white/40 rounded-sm" />
-                                    </div>
+                                    <SbiSidebarSymbol boxClassName="h-9 w-9" />
                                     <span className="text-white/40 text-[9px] font-mono tracking-widest">PRE-APPROVED</span>
                                 </div>
                                 <div>

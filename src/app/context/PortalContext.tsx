@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
 
 export type PortalMode = "hr" | "rm" | "employee";
 
@@ -17,10 +17,33 @@ const PORTAL_LABELS: Record<PortalMode, string> = {
     employee: "Employee Portal",
 };
 
+const PORTAL_STORAGE_KEY = "sbi_portal_mode";
+
+function readStoredPortalMode(): PortalMode {
+    if (typeof window === "undefined") return "hr";
+    try {
+        const s = localStorage.getItem(PORTAL_STORAGE_KEY);
+        if (s === "rm" || s === "hr" || s === "employee") return s;
+    } catch {
+        /* ignore */
+    }
+    return "hr";
+}
+
 export function PortalProvider({ children }: { children: ReactNode }) {
-    const [portalMode, setPortalMode] = useState<PortalMode>("hr");
+    const [portalMode, setPortalMode] = useState<PortalMode>(() => readStoredPortalMode());
+
+    const setPortalModePersist = useCallback((mode: PortalMode) => {
+        setPortalMode(mode);
+        try {
+            localStorage.setItem(PORTAL_STORAGE_KEY, mode);
+        } catch {
+            /* ignore */
+        }
+    }, []);
+
     return (
-        <PortalContext.Provider value={{ portalMode, setPortalMode }}>
+        <PortalContext.Provider value={{ portalMode, setPortalMode: setPortalModePersist }}>
             {children}
         </PortalContext.Provider>
     );
