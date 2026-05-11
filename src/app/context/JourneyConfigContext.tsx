@@ -456,7 +456,7 @@ const DEFAULT_SUPPORT: SupportConfig = {
 /* State Bank of India preset - optimised for all 3 journeys (NTB, ETB, ETB-NK) */
 export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
   bankName: "State Bank of India",
-  journeyName: "SBI Salary Account Opening",
+  journeyName: "State Bank of India Salary Account Opening",
   ctaLabels: {
     ...DEFAULT_CTA_LABELS,
     continue: "Continue",
@@ -473,7 +473,7 @@ export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
     ...DEFAULT_STEP_TITLES,
     welcome: "Verify Your Identity",
     heroTitle: "Get Interest Credited Every Month",
-    heroSubtitle: "With your SBI Salary Account",
+    heroSubtitle: "With your State Bank of India Salary Account",
     enterDetailsTitle: "Verify Your Identity",
     profileDetails: "Your Details",
     professionalDetailsTitle: "Please enter your Professional & Personal details",
@@ -559,7 +559,7 @@ export const IDFC_JOURNEY_PRESET: Partial<JourneyConfigState> = {
 
 const DEFAULT_JOURNEY_CONFIG: JourneyConfigState = {
   journeyId: "default",
-  journeyName: IDFC_JOURNEY_PRESET.journeyName ?? "SBI Salary Account Opening",
+  journeyName: IDFC_JOURNEY_PRESET.journeyName ?? "State Bank of India Salary Account Opening",
   bankName: IDFC_JOURNEY_PRESET.bankName ?? "State Bank of India",
   journeyMode: "form",
   offerJourneyModeChoice: true,

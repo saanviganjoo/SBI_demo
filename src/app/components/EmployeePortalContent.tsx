@@ -360,7 +360,7 @@ export default function EmployeePortalContent({ activePage, onNavigate, currentE
                     <div className="space-y-4 pt-2 border-t border-[#E8EAED]">
                         <div className="rounded-lg border border-[#E8EAED] bg-[#FAFBFC] p-5 text-center">
                             <p className="text-sm font-semibold text-[#111827] mb-1">Personal Loan</p>
-                            <p className="text-sm text-[#6B7280] mb-4">Quick funds for your goals with SBI personal loan solutions for eligible employees.</p>
+                            <p className="text-sm text-[#6B7280] mb-4">Quick funds for your goals with State Bank of India personal loan solutions for eligible employees.</p>
                             <button
                                 type="button"
                                 onClick={() => (pref ? openPersonalLoanJourneyInNewTab(pref) : openPersonalLoanJourneyInNewTab())}
@@ -511,13 +511,13 @@ function LegalModal({ title, content, onClose }: { title: string; content: strin
 }
 
 const MFIN_TNC = `Legal Notice
-VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. IF YOU DO NOT AGREE WITH ANY OF THESE TERMS, PLEASE DO NOT USE THIS SITE. IF YOU HAVE ANY QUERIES ABOUT THESE TERMS, PLEASE CONTACT YOUR SBI RELATIONSHIP MANAGER OR VISIT WWW.SBI.CO.IN
+VISITORS TO THIS WEB SITE ARE BOUND BY THE FOLLOWING TERMS AND CONDITIONS. (‘TERMS’) PLEASE READ THIS DOCUMENT CAREFULLY BEFORE CONTINUING TO USE THIS SITE. IF YOU DO NOT AGREE WITH ANY OF THESE TERMS, PLEASE DO NOT USE THIS SITE. IF YOU HAVE ANY QUERIES ABOUT THESE TERMS, PLEASE CONTACT YOUR STATE BANK OF INDIA RELATIONSHIP MANAGER OR VISIT WWW.SBI.CO.IN
 
 Disclaimer of Warranties, Inaccuracies or Errors | State Bank of India Disclaimer | Availability | Third Party Interaction and Links to Third Party Sites | Copyrights | Trademarks | General Terms and Conditions | Applicable Law and Jurisdiction
 
 Although State Bank of India tries to ensure that all information and recommendations, whether in relation to the products, services, offerings or otherwise (hereinafter ‘Information’) provided as part of this website is correct at the time of its inclusion on the web site, State Bank of India does not guarantee the accuracy of the Information. State Bank of India makes no representations or warranties as to the completeness or accuracy of the Information.
 
-THIS WEBSITE IS PROVIDED TO YOU ON AN “AS IS” AND “WHERE-IS” BASIS, WITHOUT ANY WARRANTY. SBI BANK MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
+THIS WEBSITE IS PROVIDED TO YOU ON AN “AS IS” AND “WHERE-IS” BASIS, WITHOUT ANY WARRANTY. STATE BANK OF INDIA MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
 
 Copyrights
 This web site contains material, including text, graphics and sound, which is protected by copyright and/or other intellectual property rights. All copyright and other intellectual property rights in this material are either owned by State Bank of India or have been licensed to State Bank of India by the owner(s) of those rights.

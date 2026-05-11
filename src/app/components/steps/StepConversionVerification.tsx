@@ -89,7 +89,7 @@ export default function StepConversionVerification() {
       <div className="page-header mb-6">
         <div className="flex items-start justify-end">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-            SBI to give page for this
+            State Bank of India verification (demo placeholder)
           </span>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">

@@ -75,7 +75,7 @@ function HomeContent() {
   if (redirectToBankSite) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-sm text-slate-600">Redirecting to SBI bank&apos;s site</p>
+        <p className="text-sm text-slate-600">Redirecting to State Bank of India&apos;s site</p>
       </div>
     );
   }

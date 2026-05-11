@@ -37,7 +37,7 @@ interface ProductMarketplaceDashboardProps {
 
 // SBI banking services for salary account opening portal
 const FEATURED_PRODUCTS = [
-    { icon: FileText, tag: "CORPORATE", title: "Corporate Salary Package", desc: "Specialized salary accounts for corporate employees via SBI.", benefit: "Zero Balance Account", isPrimary: true },
+    { icon: FileText, tag: "CORPORATE", title: "Corporate Salary Package", desc: "Specialized salary accounts for corporate employees via State Bank of India.", benefit: "Zero Balance Account", isPrimary: true },
     { icon: Building2, tag: "DIGITAL", title: "YONO SBI", desc: "Banking, shopping, and investment services in one app.", benefit: "All-in-one banking", isPrimary: false },
     { icon: Home, tag: "PRE-APPROVED", title: "Home Loans", desc: "Housing finance solutions at competitive rates.", benefit: "From 8.5% p.a.", isPrimary: false },
 ];
@@ -96,14 +96,14 @@ export default function ProductMarketplaceDashboard({
                         <div className="flex-1 min-w-0 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] font-bold uppercase tracking-widest mb-4">
                                 <Sparkles className="w-3 h-3 text-yellow-400" />
-                                Exclusive SBI Corporate Benefits
+                                Exclusive State Bank of India Corporate Benefits
                             </div>
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4 leading-[1.1]">
                                 Your Salary Account <br />
                                 <span className="text-white/90 italic">Banking Portal</span>
                             </h1>
                             <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                                Open your SBI salary account instantly with pre-approved corporate packages, digital banking, and exclusive employee benefits.
+                                Open your State Bank of India salary account instantly with pre-approved corporate packages, digital banking, and exclusive employee benefits.
                             </p>
                             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
                                 <button
@@ -148,7 +148,7 @@ export default function ProductMarketplaceDashboard({
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
                     <div>
                 <h2 className="text-xl font-bold text-[#111827]">Featured Services</h2>
-                <p className="text-sm text-[#6B7280] mt-0.5">Exclusive SBI banking services tailored for corporate employees</p>
+                <p className="text-sm text-[#6B7280] mt-0.5">Exclusive State Bank of India banking services tailored for corporate employees</p>
                     </div>
                     {onViewAllOffers && (
                         <button
@@ -185,7 +185,7 @@ export default function ProductMarketplaceDashboard({
             {/* Product Marketplace */}
             <div className="bg-white rounded-2xl border border-[#E8EAED] p-6 md:p-8 shadow-sm">
                 <h2 className="text-xl font-bold text-[#111827]">Banking Services</h2>
-                <p className="text-sm text-[#6B7280] mt-0.5 mb-6">Explore SBI banking and salary account services tailored for you.</p>
+                <p className="text-sm text-[#6B7280] mt-0.5 mb-6">Explore State Bank of India banking and salary account services tailored for you.</p>
                 <div className="flex flex-wrap gap-2 mb-6">
                     {MARKETPLACE_CATEGORIES.map(({ id, label, icon: Icon }) => (
                         <button

@@ -943,18 +943,18 @@ export default function Dashboard() {
                 </div>
             )}
             {/* Sidebar - RM vs HR */}
-            <aside className="w-56 bg-white border-r border-[#E8EAED] flex flex-col flex-shrink-0 shadow-sm">
+            <aside className="w-60 min-w-[15rem] bg-white border-r border-[#E8EAED] flex flex-col flex-shrink-0 shadow-sm">
                 <div className="px-4 py-4 border-b border-[#E5E7EB]">
                     {(portalMode === "employee" || portalMode === "hr") && (
                         <div className={cn("mb-4", "rounded-lg bg-[#F3F4F6] p-2")}>
                             <ProfileSwitcher />
                         </div>
                     )}
-                    <div className="flex items-center gap-3 min-w-0">
-                        <SbiSidebarSymbol priority />
-                        <div className="min-w-0">
-                            <span className="font-semibold text-[#111827]">State Bank of India</span>
-                            <p className="text-[10px] text-[#9CA3AF] mt-0.5">{portalMode === "employee" || portalMode === "hr" ? "Employee benefits" : "Corporate banking"}</p>
+                    <div className="flex items-start gap-2.5 min-w-0">
+                        <SbiSidebarSymbol priority boxClassName="h-10 w-10 shrink-0 mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                            <span className="font-semibold text-[#111827] text-[13px] leading-snug tracking-tight block">State Bank of India</span>
+                            <p className="text-[10px] text-[#9CA3AF] mt-1 leading-tight">{portalMode === "employee" || portalMode === "hr" ? "Employee benefits" : "Corporate banking"}</p>
                         </div>
                     </div>
                 </div>
@@ -1222,7 +1222,7 @@ function HREmployeeDetail({ employee, journeyStatus, onBack }: { employee: Emplo
     const totalDisbursed = journeyStatus?.status === "completed" ? "Account Active" : "—";
     const activeProducts = journeyStatus?.status === "completed" ? 3 : 0;
     const lastLogin = "18/2/2026";
-    const products = journeyStatus?.status === "completed" ? ["SBI Salary Account", "SBI Savings Account"] : [];
+    const products = journeyStatus?.status === "completed" ? ["State Bank of India Salary Account", "State Bank of India Savings Account"] : [];
 
     return (
         <div className="space-y-6">

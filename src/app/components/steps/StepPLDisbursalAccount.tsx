@@ -30,7 +30,7 @@ export default function StepPLDisbursalAccount() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Where should we send the funds?</h1>
           <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-            Your SBI Salary Account is pre-verified for instant disbursal within minutes.
+            Your State Bank of India Salary Account is pre-verified for instant disbursal within minutes.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function StepPLDisbursalAccount() {
                 </span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               </div>
-              <p className="font-bold text-slate-900 text-lg truncate">SBI Salary Account</p>
+              <p className="font-bold text-slate-900 text-lg truncate">State Bank of India Salary Account</p>
               <div className="flex items-center gap-4 mt-2">
                 <div>
                   <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest block mb-0.5">Account No.</span>

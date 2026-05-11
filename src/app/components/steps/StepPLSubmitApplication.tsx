@@ -21,7 +21,7 @@ export default function StepPLSubmitApplication() {
   const summary = [
     { label: "Selected Plan", value: formData.selectedPlan ? `${formData.selectedPlan.amount} for ${formData.selectedPlan.tenure}` : "₹10L for 48 months" },
     { label: "eNACH Method", value: formData.enachMethod || "UPI eMandate" },
-    { label: "Disbursal Account", value: "SBI Salary Account" },
+    { label: "Disbursal Account", value: "State Bank of India Salary Account" },
   ];
 
   return (

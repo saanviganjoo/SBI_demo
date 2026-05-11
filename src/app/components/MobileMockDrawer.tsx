@@ -198,21 +198,21 @@ export default function MobileMockDrawer() {
               <div className="p-8 space-y-6">
                 <div className="grid grid-cols-3 gap-3">
                   <button
-                    onClick={() => addNotification("State Bank of India", "SMS: Please complete your SBI salary account journey. Click to resume.")}
+                    onClick={() => addNotification("State Bank of India", "SMS: Please complete your State Bank of India salary account journey. Click to resume.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest">SMS</span>
                   </button>
                   <button
-                    onClick={() => addNotification("State Bank of India", "WhatsApp: Your SBI salary account is waiting. Click to resume.")}
+                    onClick={() => addNotification("State Bank of India", "WhatsApp: Your State Bank of India salary account is waiting. Click to resume.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest">WA</span>
                   </button>
                   <button
-                    onClick={() => addNotification("State Bank of India", "Email: Final reminder to complete your KYC for SBI salary account.")}
+                    onClick={() => addNotification("State Bank of India", "Email: Final reminder to complete your KYC for State Bank of India salary account.")}
                     className="flex flex-col items-center justify-center gap-2 h-20 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 border border-slate-100 transition-all active:scale-95 group"
                   >
                     <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />

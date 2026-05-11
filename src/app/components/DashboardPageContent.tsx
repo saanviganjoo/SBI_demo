@@ -577,7 +577,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                         onClick={() => setHrEmployeesMainTab("mmfsl-loans")}
                         className={cn("pb-3 text-sm font-semibold border-b-2 -mb-px transition-colors", hrEmployeesMainTab === "mmfsl-loans" ? "border-dashboard-primary text-dashboard-primary" : "border-transparent text-[#6B7280] hover:text-[#111827]")}
                     >
-                        SBI Account Penetration
+                        State Bank of India Account Penetration
                     </button>
                 </div>
 
@@ -653,7 +653,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                             return (
                                 <div className="mt-6 bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
                                     <div className="px-5 py-4 border-b border-[#E5E7EB] bg-[#F9FAFB]">
-                                        <h2 className="text-sm font-semibold text-[#111827]">Employment & income triggers (feedback from SBI CRM)</h2>
+                                        <h2 className="text-sm font-semibold text-[#111827]">Employment & income triggers (feedback from State Bank of India CRM)</h2>
                                         <p className="text-xs text-[#6B7280] mt-0.5">Change in employment triggers: function, status, salary, NACH (termination/resignation), account eligibility rules applied</p>
                                     </div>
                                     <div className="divide-y divide-[#E5E7EB]">
@@ -791,7 +791,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                     return (
                         <>
                             <p className="text-sm text-[#6B7280] mb-4">
-                                Data synced from SBI CRM. Last updated: {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })} (feedback loop from SBI CRM)
+                                Data synced from State Bank of India CRM. Last updated: {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })} (feedback loop from State Bank of India CRM)
                             </p>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
                                 <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 shadow-sm">
@@ -850,7 +850,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
 
                             <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden flex flex-col min-h-0">
                                 <div className="px-5 py-4 border-b border-[#E5E7EB] bg-[#F9FAFB]">
-                                    <h2 className="text-sm font-semibold text-[#111827]">Account details (SBI product penetration)</h2>
+                                    <h2 className="text-sm font-semibold text-[#111827]">Account details (State Bank of India product penetration)</h2>
                                     <p className="text-xs text-[#6B7280] mt-0.5">Employees with salary accounts — Savings, Current, Fixed Deposit, Recurring Deposit</p>
                                 </div>
                                 <div className="overflow-x-auto overflow-y-auto max-h-[70vh] min-h-0">
@@ -1832,7 +1832,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                 <div className="flex justify-between items-end">
                     <div>
                         <h1 className="text-2xl font-bold text-[#111827]">Banking Services</h1>
-                        <p className="text-sm text-[#6B7280] mt-0.5">Manage and configure SBI banking and salary account services for corporates</p>
+                        <p className="text-sm text-[#6B7280] mt-0.5">Manage and configure State Bank of India banking and salary account services for corporates</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <select 
@@ -2040,7 +2040,7 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                                         <div className="absolute right-0 top-full mt-1 z-20 w-[360px] max-h-[80vh] overflow-auto bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-2">
                                             <div className="px-3 pb-2 border-b border-[#E5E7EB] mb-2">
                                                 <h3 className="text-sm font-semibold text-[#111827]">Banking services for this corporate</h3>
-                                                <p className="text-xs text-[#6B7280] mt-0.5">SBI banking services. Enable or disable by category.</p>
+                                                <p className="text-xs text-[#6B7280] mt-0.5">State Bank of India banking services. Enable or disable by category.</p>
                                             </div>
                                             <div className="space-y-0">
                                                 {corpBenefits.map((b, i) => (
