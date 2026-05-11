@@ -47,6 +47,14 @@ export function getStatusBadge(empId: string, invited: boolean, statuses: Record
     return { label: "Not Started", className: "bg-slate-100 text-slate-600 border border-slate-200" };
 }
 
+/** RM Employee Directory: Nudge only after an invite was sent, while the salary journey is in progress (not merely "Invited" / not started, and not completed). */
+export function employeeEligibleForRmNudge(empId: string, invited: boolean, statuses: Record<string, JourneyStatus>): boolean {
+    if (!invited) return false;
+    const s = statuses[empId];
+    if (s?.status === "completed") return false;
+    return s?.status === "in_progress";
+}
+
 const STAT_CARD_STYLES = {
     blue: { text: "text-[#0066CC]", iconBg: "bg-[#E6F2FF]", iconColor: "text-[#0066CC]" },
     yellow: { text: "text-[#B45309]", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" },
@@ -90,13 +98,16 @@ export function HeaderCell({
     hasFilter,
     subtitle,
     stickyRight,
+    stickyTopRow,
     className,
 }: {
     label: string;
     hasFilter?: boolean;
     /** Secondary line (e.g. Actions hint); keeps same header row alignment as single-line cells */
     subtitle?: string;
-    /** Sticky right column header — use `top-0` with thead scroll so it aligns with the header row */
+    /** Pin this `<th>` to top of scroll area — use on every header cell in a sticky-header row (corner cell also sets stickyRight). */
+    stickyTopRow?: boolean;
+    /** Sticky right column; combine with stickyTopRow so vertical scroll pins like sibling headers (sticky needs both top + right). */
     stickyRight?: boolean;
     className?: string;
 }) {
@@ -105,14 +116,18 @@ export function HeaderCell({
             className={cn(
                 "px-5 py-4 align-middle text-left font-semibold text-[#374151] text-xs uppercase tracking-wide",
                 !subtitle && "whitespace-nowrap",
+                stickyTopRow && !stickyRight && "sticky top-0 z-[11] bg-[#F9FAFB] border-b border-[#E5E7EB]",
                 stickyRight &&
-                    "sticky top-0 right-0 z-[30] border-l border-[#E5E7EB] bg-[#F9FAFB] shadow-[-12px_0_20px_-12px_rgba(0,0,0,0.15)] min-w-[300px]",
+                    cn(
+                        "sticky z-[21] border-l border-[#E5E7EB] bg-[#F9FAFB] shadow-[-12px_0_20px_-12px_rgba(0,0,0,0.15)] min-w-[300px]",
+                        stickyTopRow ? "top-0 right-0 border-b border-[#E5E7EB]" : "right-0",
+                    ),
                 className,
             )}
         >
             {subtitle ? (
-                <div className="flex min-h-[2.5rem] flex-col justify-center gap-1">
-                    <div className="flex items-center gap-2 whitespace-nowrap">
+                <div className="flex min-h-[44px] flex-col justify-center gap-1 py-0.5">
+                    <div className="flex items-center gap-2 whitespace-nowrap leading-none">
                         {label}
                         {hasFilter && <Filter className="w-3.5 h-3.5 shrink-0" />}
                     </div>
@@ -121,9 +136,11 @@ export function HeaderCell({
                     </span>
                 </div>
             ) : (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                    {label}
-                    {hasFilter && <Filter className="w-3.5 h-3.5 shrink-0" />}
+                <div className={cn(stickyTopRow && "flex min-h-[44px] items-center")}>
+                    <div className="flex items-center gap-2 whitespace-nowrap">
+                        {label}
+                        {hasFilter && <Filter className="w-3.5 h-3.5 shrink-0" />}
+                    </div>
                 </div>
             )}
         </th>

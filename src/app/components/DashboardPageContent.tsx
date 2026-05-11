@@ -46,6 +46,7 @@ import {
     HeaderCell,
     getJourneyCategory,
     getStatusBadge,
+    employeeEligibleForRmNudge,
 } from "./DashboardShared";
 import ProductMarketplaceDashboard from "./shared/ProductMarketplaceDashboard";
 import { usePortal } from "@/app/context/PortalContext";
@@ -1435,12 +1436,12 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                         </div>
                     </div>
                     <div className="flex-1 overflow-x-auto overflow-y-auto min-h-0 max-h-[70vh]">
-                        <table className="w-full text-sm border-collapse min-w-[1040px]">
-                            <thead className="bg-[#F9FAFB] sticky top-0 z-10">
-                                <tr className="border-b border-[#E5E7EB]">
-                                    <HeaderCell label="Employee name" /><HeaderCell label="Phone number" /><HeaderCell label="Official Email ID" className="w-[180px]" /><HeaderCell label="Journey Category" /><HeaderCell label="Journey Status" hasFilter className="w-[160px]" /><HeaderCell label="Reference ID" className="w-[55px] px-3" />
-                                    {portalMode === "rm" && <HeaderCell label="Updates" className="w-[90px]" />}
-                                    <HeaderCell label="Actions" subtitle="Refresh now · Nudge · Invite" stickyRight />
+                        <table className="w-full text-sm border-separate border-spacing-0 min-w-[1040px]">
+                            <thead className="bg-[#F9FAFB]">
+                                <tr>
+                                    <HeaderCell label="Employee name" stickyTopRow /><HeaderCell label="Phone number" stickyTopRow /><HeaderCell label="Official Email ID" className="w-[180px]" stickyTopRow /><HeaderCell label="Journey Category" stickyTopRow /><HeaderCell label="Journey Status" hasFilter className="w-[160px]" stickyTopRow /><HeaderCell label="Reference ID" className="w-[55px] px-3" stickyTopRow />
+                                    {portalMode === "rm" && <HeaderCell label="Updates" className="w-[90px]" stickyTopRow />}
+                                    <HeaderCell label="Actions" subtitle="Refresh now · Nudge · Invite" stickyTopRow stickyRight />
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E5E7EB]">
@@ -1473,16 +1474,17 @@ export function DashboardPageContent<TEmployee extends Employee = Employee, TSta
                                         >
                                             <div className="flex items-center justify-end gap-2 flex-nowrap">
                                                 <button type="button" onClick={refreshStatuses} className="text-dashboard-primary font-medium text-xs cursor-pointer hover:underline shrink-0 whitespace-nowrap px-0.5">Refresh now</button>
-                                                {isRmEmployeeDirectory && (
-                                                    <RmEmployeeNudgeMenu
-                                                        lastNudge={(() => { void rmNudgeListTick; return getLatestRmNudgeForEmployee(emp.id); })()}
-                                                        sending={sendingRmNudgeEmployeeId === emp.id}
-                                                        sendingMode={sendingRmNudgeEmployeeId === emp.id ? (rmNudgeSendingMode ?? null) : null}
-                                                        onSend={(mode) => {
-                                                            if (onSendRmNudge) onSendRmNudge(emp, mode);
-                                                        }}
-                                                    />
-                                                )}
+                                                {isRmEmployeeDirectory &&
+                                                    employeeEligibleForRmNudge(emp.id, !!invitedEmployeeIds[emp.id], employeeStatuses) && (
+                                                        <RmEmployeeNudgeMenu
+                                                            lastNudge={(() => { void rmNudgeListTick; return getLatestRmNudgeForEmployee(emp.id); })()}
+                                                            sending={sendingRmNudgeEmployeeId === emp.id}
+                                                            sendingMode={sendingRmNudgeEmployeeId === emp.id ? (rmNudgeSendingMode ?? null) : null}
+                                                            onSend={(mode) => {
+                                                                if (onSendRmNudge) onSendRmNudge(emp, mode);
+                                                            }}
+                                                        />
+                                                    )}
                                                 <button onClick={() => handleInvite(emp)} disabled={!!invitedEmployeeIds[emp.id] || employeeStatuses[emp.id]?.status === "completed"} className={cn("h-8 px-4 border border-[#E5E7EB] rounded-full text-xs font-semibold transition-all shrink-0 whitespace-nowrap", invitedEmployeeIds[emp.id] || employeeStatuses[emp.id]?.status === "completed" ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed" : "bg-white text-[#374151] hover:bg-dashboard-primary hover:text-white hover:border-dashboard-primary")}>{employeeStatuses[emp.id]?.status === "completed" ? "Completed" : invitedEmployeeIds[emp.id] ? "Invited" : "Invite"}</button>
                                             </div>
                                         </td>

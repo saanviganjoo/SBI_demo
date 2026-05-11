@@ -386,6 +386,36 @@ const ONBOARDED_CORPORATES_KEY = "hdfc_onboarded_corporates";
 /** Seed corporates row overrides after HRMS connection (status / connections column). */
 const CORPORATE_PATCHES_KEY = "sbi_demo_corporate_row_patches_v1";
 const PORTAL_EMPLOYEE_ID_KEY = "mmfsl_portal_employee_id";
+/** Persisted RM "invite sent" flags for Employee Directory (survives full page reload). */
+const RM_INVITED_EMPLOYEE_IDS_KEY = "sbi_demo_rm_invited_employee_ids";
+
+function loadRmInvitedEmployeeIds(): Record<string, boolean> {
+    if (typeof window === "undefined") return {};
+    const seed: Record<string, boolean> = {};
+    try {
+        const seedEmployees = getSeedEmployees();
+        for (let i = 16; i < 21; i++) {
+            if (seedEmployees[i]) seed[seedEmployees[i].id] = true;
+        }
+    } catch {
+        /* ignore */
+    }
+    try {
+        const raw = localStorage.getItem(RM_INVITED_EMPLOYEE_IDS_KEY);
+        const stored = raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
+        return { ...seed, ...stored };
+    } catch {
+        return seed;
+    }
+}
+
+function persistRmInvitedEmployeeIds(ids: Record<string, boolean>) {
+    try {
+        localStorage.setItem(RM_INVITED_EMPLOYEE_IDS_KEY, JSON.stringify(ids));
+    } catch {
+        /* ignore */
+    }
+}
 
 type CorporateRowPatch = Partial<{ connections: string; status: "Active" | "Pending"; categories: string }>;
 // All corporate employees are always synced to RM dashboard (no HR manual share required)
@@ -395,16 +425,7 @@ type EmpPageKey = "dashboard" | "finagent" | "orders";
 
 export default function Dashboard() {
     const { portalMode } = usePortal();
-    const [invitedEmployeeIds, setInvitedEmployeeIds] = React.useState<Record<string, boolean>>(() => {
-        if (typeof window === "undefined") return {};
-        const initialInvited: Record<string, boolean> = {};
-        // Mark 5 more as invited (from index 16 to 20)
-        const seedEmployees = getSeedEmployees();
-        for (let i = 16; i < 21; i++) {
-            if (seedEmployees[i]) initialInvited[seedEmployees[i].id] = true;
-        }
-        return initialInvited;
-    });
+    const [invitedEmployeeIds, setInvitedEmployeeIds] = React.useState<Record<string, boolean>>(() => loadRmInvitedEmployeeIds());
     const [activePage, setActivePage] = React.useState<PageKey>("dashboard");
     const [showCorporateOnboarding, setShowCorporateOnboarding] = React.useState(false);
     const [showAddConnectionJourney, setShowAddConnectionJourney] = React.useState(false);
@@ -506,6 +527,9 @@ export default function Dashboard() {
             if (e.key?.startsWith("employeeJourneyStatus_")) {
                 refreshStatuses();
             }
+            if (e.key === RM_INVITED_EMPLOYEE_IDS_KEY) {
+                setInvitedEmployeeIds(loadRmInvitedEmployeeIds());
+            }
         };
         window.addEventListener("storage", onStorage);
         return () => window.removeEventListener("storage", onStorage);
@@ -541,6 +565,11 @@ export default function Dashboard() {
 
 
     const handleRefreshInvites = React.useCallback(() => {
+        try {
+            localStorage.removeItem(RM_INVITED_EMPLOYEE_IDS_KEY);
+        } catch {
+            /* ignore */
+        }
         setInvitedEmployeeIds({});
         refreshStatuses();
     }, [refreshStatuses]);
@@ -549,7 +578,7 @@ export default function Dashboard() {
     React.useEffect(() => {
         const onPageShow = (e: PageTransitionEvent) => {
             if (e.persisted) {
-                setInvitedEmployeeIds({});
+                setInvitedEmployeeIds(loadRmInvitedEmployeeIds());
                 refreshStatuses();
             }
         };
@@ -633,7 +662,11 @@ export default function Dashboard() {
 
     const handleInvite = (emp: Employee) => {
         if (invitedEmployeeIds[emp.id]) return;
-        setInvitedEmployeeIds((prev) => ({ ...prev, [emp.id]: true }));
+        setInvitedEmployeeIds((prev) => {
+            const next = { ...prev, [emp.id]: true };
+            persistRmInvitedEmployeeIds(next);
+            return next;
+        });
         try {
             const keysToRemove: string[] = [];
             for (let i = 0; i < localStorage.length; i++) {
